@@ -1,5 +1,10 @@
 .content {
   background-color: rgb(29, 41, 145);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 100;
 }
 
 .title {
@@ -11,15 +16,16 @@
 }
 
 .logout {
-  width: 60px;
+  width: 70px;
   height: 25px;
   position: absolute;
-  right: 5px;
+  right: 15px;
   outline: none;
   border: none;
   background: none;
   color: white;
   cursor: pointer;
+  font-size: 14px;
 }
 
 .logout:hover {

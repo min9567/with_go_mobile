@@ -2,7 +2,7 @@ import React from 'react'
 
 function Check() {
   return (
-    <div>Check</div>
+    <div className="pt-[83px]">Check</div>
   )
 }
 

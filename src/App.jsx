@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 
 import Header from "./layout/header";
+import ScrollTop from "./component/ScrollTop";
 
 import Delivery from "./pages/Delivery";
 import Storage from "./pages/Storage";
@@ -14,6 +15,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
+        <ScrollTop />
         <Header />
         <Routes>
           <Route path="/" element={<Delivery />} />

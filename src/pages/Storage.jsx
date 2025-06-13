@@ -1,38 +1,196 @@
-import React from 'react'
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+
+import { ConfigProvider, DatePicker } from "antd";
+import koKR from "antd/locale/ko_KR";
+import dayjs from "dayjs";
+
+import small from "../images/small.svg"
+import medium from "../images/medium.svg"
+import large from "../images/large.svg"
 
 function Storage() {
-  const [dateRange, setDateRange] = useState([null, null]);
-  const [startDate, endDate] = dateRange;
+  const [count, setcount] = useState(0);
+  const [twocount, settwocount] = useState(0);
+  const [threecount, setthreecount] = useState(0);
+  const [selectValue, setSelectValue] = useState("");
+  const [startDate, setStartDate] = useState(null);  // 시작일
+  const [endDate, setEndDate] = useState(null);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+
+  const datePickerWrapperRef = useRef(null);
+
+  useEffect(() => {
+    if (datePickerWrapperRef.current) {
+      const input = datePickerWrapperRef.current.querySelector("input");
+      if (input) input.readOnly = true;
+    }
+  }, []);
+
+  const indown = count * 1000 + twocount * 3000 + threecount * 5000
+
+  const Reset = () => {
+    setcount(0);
+    settwocount(0);
+    setthreecount(0);
+    setSelectValue("");
+    setStartDate(null);
+    setEndDate(null);
+    setName("");
+    setPhone("");
+    setEmail("");
+  };
 
   return (
-    <div className="bg-amber-200">
+    <div className="pt-[83px]">
       <div className="text-center mt-3.5 text-3xl font-bold mb-3.5">
-        <h1>배송예약</h1>
+        <h1>보관예약</h1>
       </div>
-      <span>배송일자 : </span>
-      <DatePicker
-        selectsRange
-        startDate={startDate}
-        endDate={endDate}
-        onChange={(update) => {
-          setDateRange(update);
-        }}
-        isClearable={true}
-        className="border px-3 py-1 rounded"
-        dateFormat="yyyy/MM/dd"
-        placeholderText='2025/06/13 - 2025/06/20'
-      />
-      <div className="mt-4">
-        {startDate && endDate ? (
-          <span>
-            선택된 기간: {startDate.toLocaleDateString()} ~ {endDate.toLocaleDateString()}
-          </span>
-        ) : (
-          <span>기간을 선택하세요.</span>
-        )}
+      <div className="flex flex-col items-center">
+        <div>
+          <div ref={datePickerWrapperRef}>
+            <ConfigProvider locale={koKR}>
+              <span>보관시작 : </span>
+              <DatePicker
+                format="YYYY-MM-DD"
+                placeholder="시작일자"
+                value={startDate}
+                onChange={setStartDate}
+                className="py-0.5 w-40"
+                styles={{
+                  popup: {
+                    root: { left: '10px' }
+                  }
+                }}
+                disabledDate={date => date && date < dayjs().startOf('day')}
+              />
+            </ConfigProvider>
+          </div>
+          <div ref={datePickerWrapperRef} className="mt-3">
+            <ConfigProvider locale={koKR}>
+              <span>보관종료 : </span>
+              <DatePicker
+                format="YYYY-MM-DD"
+                placeholder="종료일자"
+                value={endDate}
+                onChange={setEndDate}
+                className="py-0.5 w-40"
+                styles={{
+                  popup: {
+                    root: { left: '10px' }
+                  }
+                }}
+                disabledDate={date => {
+                  if (!startDate) return date && date < dayjs().startOf('day');
+                  return date && (date < dayjs().startOf('day') || date < startDate);
+                }}
+              />
+            </ConfigProvider>
+          </div>
+          <div className="mt-3">
+            <span>보관장소 : </span>
+            <select
+              name=""
+              id=""
+              placeholder="출발지 선택"
+              className="py-0.5 border border-gray-400 rounded w-40  cursor-pointer"
+              value={selectValue}
+              onChange={e => setSelectValue(e.target.value)}
+            >
+              <option value="" disabled hidden>
+                보관장소 선택
+              </option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+            </select>
+          </div>
+          <div className="mt-3">
+            <span>이</span>
+            <span className="ml-[29.5px]">름 : </span>
+            <input type="text" className="pl-1 py-0.5 w-40 border border-gray-400 rounded" value={name} onChange={e => setName(e.target.value)} />
+          </div>
+          <div className="mt-3">
+            <span>연</span><span className="ml-[7.5px]">락</span><span className="ml-[7.5px]">처 : </span>
+            <input type="number" className="pl-1 py-0.5 w-40 border border-gray-400 rounded" value={phone} onChange={e => setPhone(e.target.value)} />
+          </div>
+          <div className="mt-3">
+            <span>이</span><span className="ml-[7.5px]">메</span><span className="ml-[7.5px]">일 : </span>
+            <input type="email" className="pl-1 py-0.5 w-40 border border-gray-400 rounded" value={email} onChange={e => setEmail(e.target.value)} />
+          </div>
+        </div>
+        <div className="mt-3 w-60 border border-gray-400 rounded-3xl">
+          <div className="my-3">
+            <div>
+              <img src={small} alt="small" className="w-20 mx-auto block" />
+            </div>
+            <div className="text-center text-[20px] text-blue-500 font-medium mt-2">
+              <span>소형</span>
+            </div>
+          </div>
+        </div>
+        <div className="my-3 flex items-center h-8">
+          <button className="w-10 rounded-tl-lg rounded-bl-lg bg-blue-500 text-white text-2xl cursor-pointer"
+            onClick={() => setcount(count > 0 ? count - 1 : 0)}>
+            <span className="relative -top-[2.5px]">-</span>
+          </button>
+          <input type="text" name="" id="" value={count} readOnly className="bg-gray-300 w-30 text-center outline-none h-8 cursor-default" />
+          <button className="w-10 rounded-tr-lg rounded-br-lg bg-blue-500 text-white text-2xl cursor-pointer"
+            onClick={() => setcount(count + 1)}>
+            <span className="relative -top-[1px]">+</span>
+          </button>
+        </div>
+        <div className="w-60 border border-gray-400 rounded-3xl">
+          <div className="my-3">
+            <img src={medium} alt="" className="w-30 mx-auto block" />
+            <div className="text-center text-[20px] text-blue-500 font-medium mt-2">
+              <span>중형</span>
+            </div>
+          </div>
+        </div>
+        <div className="my-3 flex items-center h-8">
+          <button className="w-10 rounded-tl-lg rounded-bl-lg bg-blue-500 text-white text-2xl cursor-pointer"
+            onClick={() => settwocount(twocount > 0 ? twocount - 1 : 0)}>
+            <span className="relative -top-[2.5px]">-</span>
+          </button>
+          <input type="text" name="" id="" value={twocount} readOnly className="bg-gray-300 w-30 text-center outline-none h-8 cursor-default" />
+          <button className="w-10 rounded-tr-lg rounded-br-lg bg-blue-500 text-white text-2xl cursor-pointer"
+            onClick={() => settwocount(twocount + 1)}>
+            <span className="relative -top-[1px]">+</span>
+          </button>
+        </div>
+        <div className="w-60 border border-gray-400 rounded-3xl">
+          <div className="my-3">
+            <img src={large} alt="" className="w-17 mx-auto block" />
+            <div className="text-center text-[20px] text-blue-500 font-medium mt-2">
+              <span>대형</span>
+            </div>
+          </div>
+        </div>
+        <div className="my-3 flex items-center h-8">
+          <button className="w-10 rounded-tl-lg rounded-bl-lg bg-blue-500 text-white text-2xl cursor-pointer"
+            onClick={() => setthreecount(threecount > 0 ? threecount - 1 : 0)}>
+            <span className="relative -top-[2.5px]">-</span>
+          </button>
+          <input type="text" name="" id="" value={threecount} readOnly className="bg-gray-300 w-30 text-center outline-none h-8 cursor-default" />
+          <button className="w-10 rounded-tr-lg rounded-br-lg bg-blue-500 text-white text-2xl cursor-pointer"
+            onClick={() => setthreecount(threecount + 1)}>
+            <span className="relative -top-[1px]">+</span>
+          </button>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 text-blue-600 font-medium">
+            <h1 className="text-2xl">예상금액</h1>
+            <h3>(VAT포함)</h3>
+          </div>
+        </div>
+        <div>
+          <h2>KRW<span className="ml-1.5">{indown}</span></h2>
+        </div>
+        <div className="my-3">
+          <button onClick={Reset} className="w-25 bg-amber-500 text-white rounded-[10px] h-10 mr-6 cursor-pointer">초기화</button>
+          <button className="w-25 bg-amber-500 text-white rounded-[10px] h-10 cursor-pointer">보관예약</button>
+        </div>
       </div>
     </div>
   )

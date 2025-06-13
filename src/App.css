@@ -1,0 +1,31 @@
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.ant-picker-input > input {
+  caret-color: transparent;
+  cursor: pointer;
+}
+
+.ant-picker-dropdown {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+}
+
+/* 선택 가능한 날짜(활성화): pointer */
+.ant-picker-cell:not(.ant-picker-cell-disabled) .ant-picker-cell-inner {
+  cursor: pointer;
+}
+
+/* 비활성화(비선택) 날짜/빈셀: default */
+.ant-picker-cell-disabled,
+.ant-picker-cell-disabled .ant-picker-cell-inner {
+  cursor: default !important;
+}
