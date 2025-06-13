@@ -1,0 +1,52 @@
+.content {
+  background-color: rgb(29, 41, 145);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0 10px 0;
+  position: relative;
+}
+
+.logout {
+  width: 60px;
+  height: 25px;
+  position: absolute;
+  right: 5px;
+  outline: none;
+  border: none;
+  background: none;
+  color: white;
+  cursor: pointer;
+}
+
+.logout:hover {
+  border-radius: 8px;
+  background-color: white;
+  color: black;
+}
+
+.menu {
+  padding-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.menu > a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 30px;
+  text-decoration: none;
+  color: white;
+}
+
+.menu > a:hover {
+  border-radius: 10px;
+  background-color: white;
+  color: black;
+}
