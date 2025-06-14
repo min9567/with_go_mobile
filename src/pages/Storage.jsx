@@ -14,7 +14,7 @@ function Storage() {
   const [twocount, settwocount] = useState(0);
   const [threecount, setthreecount] = useState(0);
   const [selectValue, setSelectValue] = useState("");
-  const [startDate, setStartDate] = useState(null);  // 시작일
+  const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");

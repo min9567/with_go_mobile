@@ -127,7 +127,7 @@ function Check() {
                 </div>
                 <div className='flex justify-center items-center'>
                   <button className='mr-6 w-25 h-8 rounded-lg bg-blue-200 hover:bg-blue-600 text-gray-600 hover:text-white cursor-pointer'
-                      onClick={1}>
+                      >
                       배송 상태
                     </button>
                   <button className='w-25 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer'
@@ -166,7 +166,7 @@ function Check() {
                   </div>
                   <div className='flex justify-center items-center'>
                     <button className='mr-6 w-25 h-8 rounded-lg bg-blue-200 hover:bg-blue-600 text-gray-600 hover:text-white cursor-pointer'
-                      onClick={1}>
+                      >
                       배송 상태
                     </button>
                     <button className='w-25 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer'

@@ -1,8 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { ConfigProvider, DatePicker } from "antd";
+import { supabase } from "../lib/supabase";
+
 import koKR from "antd/locale/ko_KR";
 import dayjs from "dayjs";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 import down from "../images/down.svg"
 import over from "../images/over.svg"
@@ -14,10 +17,16 @@ function Delivery() {
   const [startValue, setStartValue] = useState("");
   const [endValue, setEndValue] = useState("");
   const [name, setName] = useState("");
+  const [isComposing, setIsComposing] = useState(false);
   const [phone, setPhone] = useState("");
   const [deliveryDate, setDeliveryDate] = useState(null);
   const [placeOptions, setPlaceOptions] = useState([]);
   const [arrivalOptions, setArrivalOptions] = useState([]);
+  const nameRef = useRef(null);
+  const phoneRef = useRef(null);
+  const startRef = useRef(null);
+  const endRef = useRef(null);
+  const dateRef = useRef(null);
 
   const datePickerWrapperRef = useRef(null);
 
@@ -46,10 +55,40 @@ function Delivery() {
   };
 
   const Submit = async () => {
+    if (!deliveryDate) {
+      await Swal.fire({ icon: "warning", title: '<span style="font-size:24px;">배송일을 선택해주세요.</span>', confirmButtonText: "확인" });
+      dateRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    if (!startValue) {
+      await Swal.fire({ icon: "warning", title: '<span style="font-size:24px;">출발지를 선택해주세요.</span>', confirmButtonText: "확인" });
+      startRef.current?.focus();
+      return;
+    }
+    if (!endValue) {
+      await Swal.fire({ icon: "warning", title: '<span style="font-size:24px;">도착지를 선택해주세요.</span>', confirmButtonText: "확인" });
+      endRef.current?.focus();
+      return;
+    }
+    if (!name) {
+      await Swal.fire({ icon: "warning", title: '<span style="font-size:27px;">이름을 입력해주세요.</span>', confirmButtonText: "확인" });
+      nameRef.current?.focus();
+      return;
+    }
+    if (!phone) {
+      await Swal.fire({ icon: "warning", title: '<span style="font-size:24px;">연락처를 입력해주세요.</span>', confirmButtonText: "확인" });
+      phoneRef.current?.focus();
+      return;
+    }
+    if (count === 0 && twocount === 0) {
+      await Swal.fire({ icon: "warning", title: '<span style="font-size:24px;">수량은 1개 이상<br> 가능합니다.</span>', confirmButtonText: "확인" });
+      return;
+    }
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        alert("로그인이 필요합니다.");
+        await Swal.fire({ icon: "warning", title: "로그인이 필요합니다.", confirmButtonText: "확인" });
         return;
       }
       const user_id = user.id;
@@ -58,12 +97,19 @@ function Delivery() {
         name, phone, startValue, endValue, deliveryDate, count, twocount, indown, user_id
       });
       if (res.data.success) {
-        alert("저장 성공");
+        await Swal.fire({ icon: "success", title: "저장 성공", confirmButtonText: "확인" });
         Reset();
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }, 300);
       }
     } catch (err) {
-      alert("저장 실패: " + err.response?.data?.error || err.message);
+      await Swal.fire({
+        icon: "error",
+        title: "저장 실패",
+        text: err.response?.data?.error || err.message,
+        confirmButtonText: "확인"
+      });
     }
   };
 
@@ -72,6 +118,15 @@ function Delivery() {
     setEndValue(startValue);
     setPlaceOptions(arrivalOptions);
     setArrivalOptions(placeOptions);
+  };
+
+  const formatPhoneNumber = (value) => {
+    value = value.replace(/[^0-9]/g, "");
+    if (value.length < 4) return value;
+    if (value.length < 7) return value.replace(/(\d{3})(\d+)/, "$1-$2");
+    if (value.length < 11)
+      return value.replace(/(\d{3})(\d{3})(\d+)/, "$1-$2-$3");
+    return value.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
   };
 
 
@@ -109,6 +164,7 @@ function Delivery() {
               className="py-0.5 border border-gray-400 rounded w-40  cursor-pointer"
               value={startValue}
               onChange={e => setStartValue(e.target.value)}
+              ref={startRef}
             >
               <option value="" disabled hidden>
                 출발지 선택
@@ -137,6 +193,7 @@ function Delivery() {
               className="py-0.5 border border-gray-400 rounded w-40 cursor-pointer"
               value={endValue}
               onChange={e => setEndValue(e.target.value)}
+              ref={endRef}
             >
               <option value="" disabled hidden>
                 도착지 선택
@@ -152,11 +209,31 @@ function Delivery() {
           <div className="mt-3">
             <span>이</span>
             <span className="ml-3.5">름 : </span>
-            <input type="text" className="pl-1 py-0.5 w-40 border border-gray-400 rounded" value={name} onChange={e => setName(e.target.value)} />
+            <input type="text" className="pl-1 py-0.5 w-40 border border-gray-400 rounded"
+              value={name}
+              ref={nameRef}
+              onCompositionStart={() => setIsComposing(true)}
+              onCompositionEnd={() => setIsComposing(false)}
+              onKeyDown={e => {
+                // 조합 중이거나 화살표·백스페이스 등 제어키는 무시
+                if (isComposing || e.key.length !== 1) return;
+                if (!/^[a-zA-Z가-힣]$/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+              onChange={e => setName(e.target.value)}
+            />
           </div>
           <div className="mt-3">
             <span>연락처 : </span>
-            <input type="number" className="pl-1 py-0.5 w-40 border border-gray-400 rounded" value={phone} onChange={e => setPhone(e.target.value)} />
+            <input type="text"
+              className="pl-1 py-0.5 w-40 border border-gray-400 rounded"
+              value={phone}
+              onChange={e => setPhone(formatPhoneNumber(e.target.value))}
+              inputMode="numeric"
+              maxLength={13}
+              ref={phoneRef}
+            />
           </div>
         </div>
         <div className="mt-3 w-60 border border-gray-400 rounded-3xl">

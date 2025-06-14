@@ -4,6 +4,7 @@ const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
@@ -25,6 +26,9 @@ app.get('/arrival-options', async (req, res) => {
 });
 
 app.post('/delivery', async (req, res) => {
+  console.log("==== POST /delivery 진입 ====");
+
+  console.log('POST /delivery 요청 들어옴:', req.body);
   const { name, phone, startValue, endValue, deliveryDate, count, twocount, indown, user_id } = req.body;
 
   const { data, error } = await supabase
@@ -32,6 +36,7 @@ app.post('/delivery', async (req, res) => {
     .insert([{ name, phone, delivery_start: startValue, delivery_arrive: endValue, delivery_date: deliveryDate, under: count, over: twocount, price: indown, user_id }]);
 
   if (error) return res.status(500).json({ error: error.message });
+  console.log('supabase insert 성공:', data);
   res.json({ success: true, data });
 });
 
