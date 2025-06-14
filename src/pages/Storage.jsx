@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-
+import { supabase } from "../lib/supabase";
 import { ConfigProvider, DatePicker } from "antd";
 import koKR from "antd/locale/ko_KR";
 import dayjs from "dayjs";
@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import small from "../images/small.svg"
 import medium from "../images/medium.svg"
 import large from "../images/large.svg"
+import axios from "axios";
 
 function Storage() {
   const [count, setcount] = useState(0);
@@ -18,6 +19,7 @@ function Storage() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [placeOptions, setPlaceOptions] = useState([]);
 
   const datePickerWrapperRef = useRef(null);
 
@@ -26,6 +28,19 @@ function Storage() {
       const input = datePickerWrapperRef.current.querySelector("input");
       if (input) input.readOnly = true;
     }
+  }, []);
+
+  useEffect(() => {
+    const fetchPlaces = async () => {
+      const [{ data: data1 }, { data: data2 }] = await Promise.all([
+        supabase.from('storage_place').select('name'),
+        supabase.from('partner_place').select('name')
+      ]);
+
+      const allOptions = [...new Set([...data1.map(x => x.name), ...data2.map(x => x.name)])];
+      setPlaceOptions(allOptions);
+    };
+    fetchPlaces();
   }, []);
 
   const indown = count * 1000 + twocount * 3000 + threecount * 5000
@@ -40,6 +55,30 @@ function Storage() {
     setName("");
     setPhone("");
     setEmail("");
+  };
+
+  const Submit = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+      const user_id = user.id;
+
+      const res = await axios.post("http://localhost:4000/storage", {
+        name, phone, email, startDate, endDate, selectValue,
+        count, twocount, threecount, indown, reservation_country: "Mobile",
+        user_id
+      });
+      if (res.data.success) {
+        alert("저장 성공");
+        Reset();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    } catch (err) {
+      alert("저장 실패: " + err.response?.data?.error || err.message);
+    }
   };
 
   return (
@@ -101,8 +140,12 @@ function Storage() {
               <option value="" disabled hidden>
                 보관장소 선택
               </option>
-              <option value="1">1</option>
-              <option value="2">2</option>
+              {placeOptions
+                .slice()
+                .sort((a, b) => a.localeCompare(b, 'ko'))
+                .map((name, idx) => (
+                  < option key={idx} value={name}>{name}</option>
+                ))}
             </select>
           </div>
           <div className="mt-3">
@@ -189,10 +232,11 @@ function Storage() {
         </div>
         <div className="my-3">
           <button onClick={Reset} className="w-25 bg-amber-500 text-white rounded-[10px] h-10 mr-6 cursor-pointer">초기화</button>
-          <button className="w-25 bg-amber-500 text-white rounded-[10px] h-10 cursor-pointer">보관예약</button>
+          <button className="w-25 bg-amber-500 text-white rounded-[10px] h-10 cursor-pointer"
+            onClick={Submit}>보관예약</button>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 

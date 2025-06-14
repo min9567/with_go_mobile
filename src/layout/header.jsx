@@ -1,23 +1,30 @@
-import React from "react";
 import Header from "../css/Header.module.css";
-
 import logo from "../images/withgo.svg";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 
 function header() {
+  const navigate = useNavigate();
+
+  const Logout = async () => {
+    await supabase.auth.signOut();
+    navigate("/login");
+  };
+
+
   return (
     <div className={Header.content}>
       <div className={Header.title}>
         <Link to="/">
           <img src={logo} alt="logo" />
         </Link>
-        <button className={Header.logout}>로그아웃</button>
+        <button className={Header.logout} onClick={Logout}>로그아웃</button>
       </div>
       <div className={Header.menu}>
-        <Link to="/">배송</Link>
+        <Link to="/delivery">배송</Link>
         <Link to="/storage">보관</Link>
-        <Link to="/check">조회</Link>
+        <Link to="/">조회</Link>
       </div>
     </div>
   );

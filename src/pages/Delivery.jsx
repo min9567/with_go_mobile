@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-
 import { ConfigProvider, DatePicker } from "antd";
 import koKR from "antd/locale/ko_KR";
 import dayjs from "dayjs";
+import axios from "axios";
 
 import down from "../images/down.svg"
 import over from "../images/over.svg"
+import swap from "../images/swap.svg"
 
 function Delivery() {
   const [count, setcount] = useState(0);
@@ -15,6 +16,8 @@ function Delivery() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [deliveryDate, setDeliveryDate] = useState(null);
+  const [placeOptions, setPlaceOptions] = useState([]);
+  const [arrivalOptions, setArrivalOptions] = useState([]);
 
   const datePickerWrapperRef = useRef(null);
 
@@ -23,6 +26,11 @@ function Delivery() {
       const input = datePickerWrapperRef.current.querySelector("input");
       if (input) input.readOnly = true;
     }
+  }, []);
+
+  useEffect(() => {
+    axios.get('http://localhost:4000/place-options').then(res => setPlaceOptions(res.data.data));
+    axios.get('http://localhost:4000/arrival-options').then(res => setArrivalOptions(res.data.data));
   }, []);
 
   const indown = count * 10000 + twocount * 15000
@@ -36,6 +44,36 @@ function Delivery() {
     setName("");
     setPhone("");
   };
+
+  const Submit = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+      const user_id = user.id;
+
+      const res = await axios.post("http://localhost:4000/delivery", {
+        name, phone, startValue, endValue, deliveryDate, count, twocount, indown, user_id
+      });
+      if (res.data.success) {
+        alert("저장 성공");
+        Reset();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    } catch (err) {
+      alert("저장 실패: " + err.response?.data?.error || err.message);
+    }
+  };
+
+  const Swap = () => {
+    setStartValue(endValue);
+    setEndValue(startValue);
+    setPlaceOptions(arrivalOptions);
+    setArrivalOptions(placeOptions);
+  };
+
 
   return (
     <div className="pt-[83px]">
@@ -75,11 +113,22 @@ function Delivery() {
               <option value="" disabled hidden>
                 출발지 선택
               </option>
-              <option value="1">1</option>
-              <option value="2">2</option>
+              {placeOptions
+                .slice()
+                .sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+                .map((item, idx) => (
+                  <option key={idx} value={item.name}>{item.name}</option>
+                ))
+              }
             </select>
           </div>
-          <div className="mt-3">
+          <div className="h-9 mt-1 flex justify-center items-center">
+            <button className="w-20 rounded-md flex justify-center items-center cursor-pointer"
+              onClick={Swap}>
+              <img src={swap} alt="swap" className="w-7" />
+            </button>
+          </div>
+          <div className="mt-1">
             <span>도착지 : </span>
             <select
               name=""
@@ -92,8 +141,12 @@ function Delivery() {
               <option value="" disabled hidden>
                 도착지 선택
               </option>
-              <option value="3">3</option>
-              <option value="4">4</option>
+              {arrivalOptions
+                .slice()
+                .sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+                .map((item, idx) => (
+                  <option key={idx} value={item.name}>{item.name}</option>
+                ))}
             </select>
           </div>
           <div className="mt-3">
@@ -157,7 +210,8 @@ function Delivery() {
         </div>
         <div className="my-3">
           <button onClick={Reset} className="w-25 bg-amber-500 text-white rounded-[10px] h-10 mr-6 cursor-pointer">초기화</button>
-          <button className="w-25 bg-amber-500 text-white rounded-[10px] h-10">배송예약</button>
+          <button className="w-25 bg-amber-500 text-white rounded-[10px] h-10 cursor-pointer"
+            onClick={Submit}>배송예약</button>
         </div>
       </div>
     </div>
