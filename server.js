@@ -15,8 +15,8 @@ app.use(cors());
 app.use(express.json());
 
 const supabase = createClient(
-  process.env.VITE_SUPABASE_URL,
-  process.env.VITE_SUPABASE_KEY
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
 );
 
 app.get('/place-options', async (req, res) => {
