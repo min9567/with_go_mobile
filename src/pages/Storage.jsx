@@ -3,11 +3,12 @@ import { supabase } from "../lib/supabase";
 import { ConfigProvider, DatePicker } from "antd";
 import koKR from "antd/locale/ko_KR";
 import dayjs from "dayjs";
+import Swal from 'sweetalert2';
+import axios from "axios";
 
 import small from "../images/small.svg"
 import medium from "../images/medium.svg"
 import large from "../images/large.svg"
-import axios from "axios";
 
 function Storage() {
   const [count, setcount] = useState(0);
@@ -20,8 +21,15 @@ function Storage() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [placeOptions, setPlaceOptions] = useState([]);
+  const [isComposing, setIsComposing] = useState(false);
 
   const datePickerWrapperRef = useRef(null);
+  const dateStartRef = useRef(null);
+  const dateEndRef = useRef(null);
+  const placeRef = useRef(null);
+  const nameRef = useRef(null);
+  const phoneRef = useRef(null);
+  const emailRef = useRef(null);
 
   useEffect(() => {
     if (datePickerWrapperRef.current) {
@@ -43,6 +51,24 @@ function Storage() {
     fetchPlaces();
   }, []);
 
+  const NameChange = e => {
+    const v = e.target.value;
+    if (isComposing) {
+      setName(v);
+    } else {
+      setName(v.replace(/[^가-힣ㄱ-ㅎA-Za-z\s]/g, ""));
+    }
+  };
+
+  const EmailChange = e => {
+    const v = e.target.value;
+    if (isComposing) {
+      setEmail(v);
+    } else {
+      setEmail(v.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, ""));
+    }
+  };
+
   const indown = count * 1000 + twocount * 3000 + threecount * 5000
 
   const Reset = () => {
@@ -58,10 +84,94 @@ function Storage() {
   };
 
   const Submit = async () => {
+    if (!startDate) {
+      await Swal.fire({
+        icon: "warning",
+        title: '<span style="font-size:20px;">보관 시작일을 선택해주세요.</span>',
+        confirmButtonText: "확인"
+      });
+      dateStartRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    if (!endDate) {
+      await Swal.fire({
+        icon: "warning",
+        title: '<span style="font-size:20px;">보관 종료일을 선택해주세요.</span>',
+        confirmButtonText: "확인"
+      });
+      dateEndRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    if (!selectValue) {
+      await Swal.fire({
+        icon: "warning",
+        title: '<span style="font-size:20px;">보관장소를 선택해주세요.</span>',
+        confirmButtonText: "확인"
+      });
+      placeRef.current?.focus();
+      return;
+    }
+    if (!name) {
+      await Swal.fire({
+        icon: "warning",
+        title: '<span style="font-size:20px;">이름을 입력해주세요.</span>',
+        confirmButtonText: "확인"
+      });
+      nameRef.current?.focus();
+      return;
+    }
+    if (!phone) {
+      await Swal.fire({
+        icon: "warning",
+        title: '<span style="font-size:20px;">연락처를 입력해주세요.</span>',
+        confirmButtonText: "확인"
+      });
+      phoneRef.current?.focus();
+      return;
+    }
+
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      if (!email) {
+        await Swal.fire({
+          icon: "warning",
+          title: '<span style="font-size:20px;">이메일을 입력해주세요.</span>',
+          confirmButtonText: "확인"
+        });
+        emailRef.current?.focus();
+        return;
+      }
+
+      const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+      if (!emailRegex.test(email)) {
+        await Swal.fire({
+          icon: "warning",
+          title: '<span style="font-size:20px;">유효한 이메일 형식이 아닙니다.</span>',
+          text: '예) example@domain.com',
+          confirmButtonText: "확인"
+        });
+        emailRef.current?.focus();
+        return;
+      }
+    }
+
+    if (count + twocount + threecount === 0) {
+      await Swal.fire({
+        icon: "warning",
+        title: '<span style="font-size:20px;">수량 최소 1개이상<br>선택해주세요.</span>',
+        confirmButtonText: "확인"
+      });
+      return;
+    }
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        alert("로그인이 필요합니다.");
+        await Swal.fire({
+          icon: "warning",
+          title: '<span style="font-size:24px;">로그인이 필요합니다.</span>',
+          confirmButtonText: "확인"
+        });
         return;
       }
       const user_id = user.id;
@@ -72,13 +182,37 @@ function Storage() {
         user_id
       });
       if (res.data.success) {
-        alert("저장 성공");
+        await Swal.fire({
+          icon: "success",
+          title: "저장 성공",
+          confirmButtonText: "확인"
+        });
         Reset();
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 300);
       }
     } catch (err) {
-      alert("저장 실패: " + err.response?.data?.error || err.message);
+      await Swal.fire({
+        icon: "error",
+        title: "저장 실패",
+        text: err.response?.data?.error || err.message,
+        confirmButtonText: "확인"
+      });
     }
+  };
+
+  const formatPhoneNumber = (value) => {
+    value = value.replace(/[^0-9]/g, "");
+    if (value.length < 4) return value;
+    if (value.length < 7) return value.replace(/(\d{3})(\d+)/, "$1-$2");
+    if (value.length < 11)
+      return value.replace(/(\d{3})(\d{3})(\d+)/, "$1-$2-$3");
+    return value.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+  };
+
+  const PhoneChange = e => {
+    const raw = e.target.value.replace(/\D/g, "");
+    const formatted = formatPhoneNumber(raw);
+    setPhone(formatted);
   };
 
   return (
@@ -151,15 +285,39 @@ function Storage() {
           <div className="mt-3">
             <span>이</span>
             <span className="ml-[29.5px]">름 : </span>
-            <input type="text" className="pl-1 py-0.5 w-40 border border-gray-400 rounded" value={name} onChange={e => setName(e.target.value)} />
+            <input
+              type="text"
+              className="pl-1 py-0.5 w-40 border border-gray-400 rounded"
+              value={name}
+              onChange={NameChange}
+              onCompositionStart={() => setIsComposing(true)}
+              onCompositionEnd={e => {
+                setIsComposing(false);
+                setName(e.target.value.replace(/[^가-힣ㄱ-ㅎA-Za-z\s]/g, ""));
+              }}
+            />
           </div>
           <div className="mt-3">
             <span>연</span><span className="ml-[7.5px]">락</span><span className="ml-[7.5px]">처 : </span>
-            <input type="number" className="pl-1 py-0.5 w-40 border border-gray-400 rounded" value={phone} onChange={e => setPhone(e.target.value)} />
+            <input type="text"
+              className="pl-1 py-0.5 w-40 border border-gray-400 rounded"
+              value={phone}
+              onChange={PhoneChange}
+              inputMode="numeric"
+              maxLength={13} />
           </div>
           <div className="mt-3">
             <span>이</span><span className="ml-[7.5px]">메</span><span className="ml-[7.5px]">일 : </span>
-            <input type="email" className="pl-1 py-0.5 w-40 border border-gray-400 rounded" value={email} onChange={e => setEmail(e.target.value)} />
+            <input type="email"
+              className="pl-1 py-0.5 w-40 border border-gray-400 rounded"
+              value={email}
+              onChange={EmailChange}
+              onCompositionStart={() => setIsComposing(true)}
+              onCompositionEnd={e => {
+                setIsComposing(false);
+                // 완료 직후에도 다시 한번 필터
+                setEmail(prev => prev.replace(/[가-힣ㄱ-ㅎ]/g, ""));
+              }} />
           </div>
         </div>
         <div className="mt-3 w-60 border border-gray-400 rounded-3xl">

@@ -3,10 +3,34 @@ import { supabase } from "../lib/supabase";
 
 import Swal from 'sweetalert2';
 import axios from "axios";
+import Modal from "../component/StorageModal";
+import DModal from "../component/DeliveryModal";
 
 function Check() {
   const [storageList, setStorageList] = useState([]);
   const [deliveryList, setDeliveryList] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [dModalOpen, setDModalOpen] = useState(false);
+  const [progressData, setProgressData] = useState(null);
+
+  const ShowStorageProgress = (item) => {
+    setProgressData(item);
+    setModalOpen(true);
+  };
+
+  const ShowDeliveryProgress = (item) => {
+    setProgressData(item);
+    setDModalOpen(true);
+  };
+
+  const CloseModal = () => {
+    setModalOpen(false);
+    setProgressData(null);
+  };
+  const CloseDModal = () => {
+    setDModalOpen(false);
+    setProgressData(null);
+  };
 
   useEffect(() => {
     const fetchMyData = async () => {
@@ -17,7 +41,8 @@ function Check() {
       const { data: storageData } = await supabase
         .from("storage")
         .select("*")
-        .eq("user_id", myUuid);
+        .eq("user_id", myUuid)
+        .order("reservation_time", { ascending: false })
 
       const { data: deliveryData } = await supabase
         .from("delivery")
@@ -55,6 +80,7 @@ function Check() {
         if (res.data.success) {
           setStorageList(prev => prev.filter(item => item.reservation_number !== reservation_number));
           Swal.fire('취소 완료', '신청이 취소되었습니다.', 'success');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
           Swal.fire('오류', '삭제 실패', 'error');
         }
@@ -114,6 +140,7 @@ function Check() {
                   <p>신청일 : {item.reservation_time.slice(0, 16).replace('T', ' ')}</p>
                   <p>성함 : {item.name}</p>
                   <p>연락처 : {item.phone}</p>
+                  <p>이메일 : {item.mail}</p>
                   <p>보관일 : {item.storage_start_date} ~ {item.storage_end_date}</p>
                   <p>보관장소 : {item.location}</p>
                   <p>수량 : {
@@ -126,10 +153,11 @@ function Check() {
                   <p>결제금액 : {item.price.toLocaleString()}원</p>
                 </div>
                 <div className='flex justify-center items-center'>
-                  <button className='mr-6 w-25 h-8 rounded-lg bg-blue-200 hover:bg-blue-600 text-gray-600 hover:text-white cursor-pointer'
-                      >
-                      배송 상태
-                    </button>
+                  <button
+                    className='mr-6 w-25 h-8 rounded-lg bg-blue-200 hover:bg-blue-600 text-gray-600 hover:text-white cursor-pointer'
+                    onClick={() => ShowStorageProgress(item)}                  >
+                    진행 상태
+                  </button>
                   <button className='w-25 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer'
                     onClick={() => StorageDelete(item.reservation_number)}>
                     신청 취소
@@ -166,7 +194,7 @@ function Check() {
                   </div>
                   <div className='flex justify-center items-center'>
                     <button className='mr-6 w-25 h-8 rounded-lg bg-blue-200 hover:bg-blue-600 text-gray-600 hover:text-white cursor-pointer'
-                      >
+                      onClick={() => ShowDeliveryProgress(item)}>
                       배송 상태
                     </button>
                     <button className='w-25 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer'
@@ -181,6 +209,16 @@ function Check() {
           )}
         </div>
       </div>
+      <Modal
+        open={modalOpen}
+        onClose={CloseModal}
+        progressData={progressData}
+      />
+      <DModal
+        open={dModalOpen}
+        onClose={CloseDModal}
+        progressData={progressData}
+      />
     </div>
   )
 }

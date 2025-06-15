@@ -215,7 +215,6 @@ function Delivery() {
               onCompositionStart={() => setIsComposing(true)}
               onCompositionEnd={() => setIsComposing(false)}
               onKeyDown={e => {
-                // 조합 중이거나 화살표·백스페이스 등 제어키는 무시
                 if (isComposing || e.key.length !== 1) return;
                 if (!/^[a-zA-Z가-힣]$/.test(e.key)) {
                   e.preventDefault();
