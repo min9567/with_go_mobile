@@ -22,7 +22,7 @@ const login = () => {
         </div>
         <div className="mt-3 flex justify-center items-center">
           <button onClick={KakaoLogin}>
-            <img src={kakao} alt="kakao" className='w-13 py-2 cursor-pointer' />
+            <img src={kakao} alt="kakao" className='w-14 py-2 cursor-pointer' />
           </button>
         </div>
       </div>
