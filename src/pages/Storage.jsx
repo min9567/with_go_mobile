@@ -175,8 +175,9 @@ function Storage() {
         return;
       }
       const user_id = user.id;
+      const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-      const res = await axios.post("http://localhost:4000/storage", {
+      const res = await axios.post(`${API_BASE_URL}/storage`, {
         name, phone, email, startDate, endDate, selectValue,
         count, twocount, threecount, indown, reservation_country: "Mobile",
         user_id

@@ -37,9 +37,11 @@ function Delivery() {
     }
   }, []);
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
-    axios.get('http://localhost:4000/place-options').then(res => setPlaceOptions(res.data.data));
-    axios.get('http://localhost:4000/arrival-options').then(res => setArrivalOptions(res.data.data));
+    axios.get(`${API_BASE_URL}/place-options`).then(res => setPlaceOptions(res.data.data));
+    axios.get(`${API_BASE_URL}/arrival-options`).then(res => setArrivalOptions(res.data.data));
   }, []);
 
   const indown = count * 10000 + twocount * 15000
@@ -93,7 +95,7 @@ function Delivery() {
       }
       const user_id = user.id;
 
-      const res = await axios.post("http://localhost:4000/delivery", {
+      const res = await axios.post(`${API_BASE_URL}/delivery`, {
         name, phone, startValue, endValue, deliveryDate, count, twocount, indown, user_id
       });
       if (res.data.success) {

@@ -5,14 +5,15 @@ function StorageModal({ open, onClose, progressData }) {
     const [statusLogs, setStatusLogs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [location, setLocation] = useState("");
-
+    const API_BASE_URL = import.meta.env.VITE_API_URL;
+    
     useEffect(() => {
         if (!open || !progressData) return;
 
         const fetchStatusLogs = async () => {
             setLoading(true);
             try {
-                const res = await axios.post("http://localhost:4000/status-logs", {
+                const res = await axios.post(`${API_BASE_URL}/status-logs`, {
                     reservation_number: progressData.reservation_number,
                 });
                 const { logs, location } = res.data;

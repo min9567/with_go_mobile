@@ -73,7 +73,7 @@ function Check() {
     });
     if (result.isConfirmed) {
       try {
-        const res = await axios.post("http://localhost:4000/storage-delete", {
+        const res = await axios.post(`${API_BASE_URL}/storage-delete`, {
           reservation_number,
           user_id
         });
@@ -105,10 +105,10 @@ function Check() {
       confirmButtonText: '네, 취소할래요',
       cancelButtonText: '아니오'
     });
-
+    const API_BASE_URL = import.meta.env.VITE_API_URL;
     if (result.isConfirmed) {
       try {
-        const res = await axios.post("http://localhost:4000/delivery-delete", {
+        const res = await axios.post(`${API_BASE_URL}/delivery-delete`, {
           re_num,
           user_id
         });

@@ -8,11 +8,12 @@ function Modal({ open, onClose, progressData }) {
 
     useEffect(() => {
         if (!open || !progressData) return;
+        const API_BASE_URL = import.meta.env.VITE_API_URL;
 
         const fetchStatusLogs = async () => {
             setLoading(true);
             try {
-                const res = await axios.post("http://localhost:4000/status-logs", {
+                const res = await axios.post(`${API_BASE_URL}/status-logs`, {
                     re_num: progressData.re_num,  // 배송은 이걸로 보내야 함
                 });
                 const { logs, location } = res.data;
