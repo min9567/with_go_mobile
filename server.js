@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 const { createClient } = require("@supabase/supabase-js");
 require("dotenv").config();
@@ -234,6 +235,14 @@ app.post("/status-logs", async (req, res) => {
     logs,
     location,
   });
+});
+
+// 정적 파일 제공
+app.use(express.static(path.join(__dirname, "dist"))); // ← React 빌드 결과 폴더
+
+// 모든 나머지 요청은 React의 index.html로 리다이렉트
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
 const PORT = process.env.PORT || 8080;
