@@ -7,9 +7,14 @@ const login = () => {
   
   const KakaoLogin = async () => {
     await supabase.auth.signInWithOAuth({
-      provider: "kakao"
+      provider: "kakao",
+      options: {
+        redirectTo: 'https://with-go-mobile.vercel.app/'
+      }
     });
   };
+
+  
 
   return (
     <div className="bg-blue-300 min-h-screen flex flex-col">
