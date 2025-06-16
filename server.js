@@ -19,6 +19,10 @@ const supabase = createClient(
   process.env.SUPABASE_KEY || process.env.VITE_SUPABASE_KEY
 );
 
+app.get('/', (req, res) => {
+  res.send('API 서버 정상 작동 중');
+});
+
 app.get("/place-options", async (req, res) => {
   const { data, error } = await supabase.from("storage_place").select("name");
   if (error) return res.status(500).json({ error: error.message });
@@ -232,7 +236,9 @@ app.post("/status-logs", async (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`서버 실행 중: http://localhost:${PORT}`);
 });
+
+console.log('포트 확인:', process.env.PORT);
