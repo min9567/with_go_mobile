@@ -88,11 +88,11 @@ function Delivery() {
     }
 
     try {
-      // const { data: { user } } = await supabase.auth.getUser();
-      // if (!user) {
-      //   await Swal.fire({ icon: "warning", title: "로그인이 필요합니다.", confirmButtonText: "확인" });
-      //   return;
-      // }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        await Swal.fire({ icon: "warning", title: "로그인이 필요합니다.", confirmButtonText: "확인" });
+        return;
+      }
       const user_id = user.id;
 
       const res = await axios.post(`${API_BASE_URL}/delivery`, {
