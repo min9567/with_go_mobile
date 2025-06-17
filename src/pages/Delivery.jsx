@@ -364,6 +364,15 @@ function Delivery() {
             KRW<span className="ml-1.5">{indown}</span>
           </h2>
         </div>
+        <div className="mt-5">
+          <input type="checkbox" name="ToS" id="ToS" className="cursor-pointer" />
+          <label htmlFor="ToS" className="ml-1 cursor-pointer">이용약관에 동의합니다.</label>
+        </div>
+        <div>
+          <button className="mb-5 text-[13px] bg-black text-white">
+            [ 이용약관 보기 ]
+          </button>
+        </div>
         <div className="my-3">
           <button
             onClick={Reset}

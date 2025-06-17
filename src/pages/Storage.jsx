@@ -389,6 +389,15 @@ function Storage() {
         <div>
           <h2>KRW<span className="ml-1.5">{indown}</span></h2>
         </div>
+        <div className="mt-5">
+          <input type="checkbox" name="ToS" id="ToS" className="cursor-pointer" />
+          <label htmlFor="ToS" className="ml-1 cursor-pointer">이용약관에 동의합니다.</label>
+        </div>
+        <div>
+          <button className="mb-5 text-[13px] bg-black text-white">
+            [ 이용약관 보기 ]
+          </button>
+        </div>
         <div className="my-3">
           <button onClick={Reset} className="w-24 bg-amber-500 text-white rounded-[10px] h-10 mr-6 cursor-pointer">초기화</button>
           <button className="w-24 bg-amber-500 text-white rounded-[10px] h-10 cursor-pointer"
