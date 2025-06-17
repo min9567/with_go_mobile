@@ -40,8 +40,8 @@ function StorageModal({ open, onClose, progressData }) {
                 <div className="w-full">
                     <table className="mx-auto">
                         <colgroup>
-                            <col style={{ width: "46%" }} />
-                            <col style={{ width: "17%" }} />
+                            <col style={{ width: "48%" }} />
+                            <col style={{ width: "18%" }} />
                             <col style={{ width: "35%" }} />
                         </colgroup>
                         <thead className="border-b border-b-gray-500">

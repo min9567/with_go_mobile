@@ -217,7 +217,7 @@ function Storage() {
   };
 
   return (
-    <div className="pt-[83px]">
+    <div className="pt-[93px]">
       <div className="text-center mt-3.5 text-3xl font-bold mb-3.5">
         <h1>보관예약</h1>
       </div>
@@ -336,7 +336,7 @@ function Storage() {
             onClick={() => setcount(count > 0 ? count - 1 : 0)}>
             <span className="relative -top-[2.5px]">-</span>
           </button>
-          <input type="text" name="" id="" value={count} readOnly className="bg-gray-300 w-30 text-center outline-none h-8 cursor-default" />
+          <input type="text" name="" id="" value={count} readOnly className="bg-gray-300 w-32 text-center outline-none h-8 cursor-default" />
           <button className="w-10 rounded-tr-lg rounded-br-lg bg-blue-500 text-white text-2xl cursor-pointer"
             onClick={() => setcount(count + 1)}>
             <span className="relative -top-[1px]">+</span>
@@ -344,7 +344,7 @@ function Storage() {
         </div>
         <div className="w-60 border border-gray-400 rounded-3xl">
           <div className="my-3">
-            <img src={medium} alt="" className="w-30 mx-auto block" />
+            <img src={medium} alt="" className="w-32 mx-auto block" />
             <div className="text-center text-[20px] text-blue-500 font-medium mt-2">
               <span>중형</span>
             </div>
@@ -355,7 +355,7 @@ function Storage() {
             onClick={() => settwocount(twocount > 0 ? twocount - 1 : 0)}>
             <span className="relative -top-[2.5px]">-</span>
           </button>
-          <input type="text" name="" id="" value={twocount} readOnly className="bg-gray-300 w-30 text-center outline-none h-8 cursor-default" />
+          <input type="text" name="" id="" value={twocount} readOnly className="bg-gray-300 w-32 text-center outline-none h-8 cursor-default" />
           <button className="w-10 rounded-tr-lg rounded-br-lg bg-blue-500 text-white text-2xl cursor-pointer"
             onClick={() => settwocount(twocount + 1)}>
             <span className="relative -top-[1px]">+</span>
@@ -363,7 +363,7 @@ function Storage() {
         </div>
         <div className="w-60 border border-gray-400 rounded-3xl">
           <div className="my-3">
-            <img src={large} alt="" className="w-17 mx-auto block" />
+            <img src={large} alt="" className="w-16 mx-auto block" />
             <div className="text-center text-[20px] text-blue-500 font-medium mt-2">
               <span>대형</span>
             </div>
@@ -374,7 +374,7 @@ function Storage() {
             onClick={() => setthreecount(threecount > 0 ? threecount - 1 : 0)}>
             <span className="relative -top-[2.5px]">-</span>
           </button>
-          <input type="text" name="" id="" value={threecount} readOnly className="bg-gray-300 w-30 text-center outline-none h-8 cursor-default" />
+          <input type="text" name="" id="" value={threecount} readOnly className="bg-gray-300 w-32 text-center outline-none h-8 cursor-default" />
           <button className="w-10 rounded-tr-lg rounded-br-lg bg-blue-500 text-white text-2xl cursor-pointer"
             onClick={() => setthreecount(threecount + 1)}>
             <span className="relative -top-[1px]">+</span>
@@ -390,8 +390,8 @@ function Storage() {
           <h2>KRW<span className="ml-1.5">{indown}</span></h2>
         </div>
         <div className="my-3">
-          <button onClick={Reset} className="w-25 bg-amber-500 text-white rounded-[10px] h-10 mr-6 cursor-pointer">초기화</button>
-          <button className="w-25 bg-amber-500 text-white rounded-[10px] h-10 cursor-pointer"
+          <button onClick={Reset} className="w-24 bg-amber-500 text-white rounded-[10px] h-10 mr-6 cursor-pointer">초기화</button>
+          <button className="w-24 bg-amber-500 text-white rounded-[10px] h-10 cursor-pointer"
             onClick={Submit}>보관예약</button>
         </div>
       </div>
