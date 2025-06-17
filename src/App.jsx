@@ -4,7 +4,7 @@ import "./App.css";
 
 import Header from "./layout/header";
 import ScrollTop from "./component/ScrollTop";
-import PrivateRoute from "./component/PrivateRoute"
+// import PrivateRoute from "./component/PrivateRoute"
 
 import Delivery from "./pages/Delivery";
 import Storage from "./pages/Storage";
@@ -21,10 +21,10 @@ function App() {
       <ScrollTop />
       {!isLoginPage && <Header />}
       <Routes>
-        <Route path="/" element={<PrivateRoute><Check /></PrivateRoute>} />
+        <Route path="/" element={<Check />}/>
         <Route path="/login" element={<Login />} />
-        <Route path="/delivery" element={<PrivateRoute><Delivery /></PrivateRoute>} />
-        <Route path="/storage" element={<PrivateRoute><Storage /></PrivateRoute>} />
+        <Route path="/delivery" element={<Delivery />} />
+        <Route path="/storage" element={<Storage />} />
       </Routes>
     </>
   );

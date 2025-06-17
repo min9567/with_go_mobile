@@ -34,27 +34,30 @@ function Check() {
 
   useEffect(() => {
     const fetchMyData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const myUuid = user.id;
+      /* 카카오 로그인 풀리고 나면 주석 처리 한거 되돌리기 */
+      // const { data: { user } } = await supabase.auth.getUser();
+      // if (!user) return;
+      // const myUuid = user.id;
 
       const { data: storageData } = await supabase
         .from("storage")
         .select("*")
-        .eq("user_id", myUuid)
+        // .eq("user_id", myUuid)
         .order("reservation_time", { ascending: false })
 
       const { data: deliveryData } = await supabase
         .from("delivery")
         .select("*")
-        .eq("user_id", myUuid);
-
+        // .eq("user_id", myUuid);
+      console.log("조회 결과 = ",deliveryData);
+      // console.log("로그인 아이디 = ",myUuid);
       setStorageList(storageData || []);
       setDeliveryList(deliveryData || []);
+      /* 카카오 로그인 오류로 인해 잠시 주석처리 해둠! 06-17 */
     };
-
+    console.log("넘어옴?");
     fetchMyData();
-  }, []);
+  },[]);
 
   const StorageDelete = async (reservation_number) => {
     const { data: { user } } = await supabase.auth.getUser();
