@@ -179,13 +179,13 @@ function Check() {
                       신청일 :{" "}
                       {item.reservation_time.slice(0, 16).replace("T", " ")}
                     </p>
-                    <p>성함 : {item.name}</p>
-                    <p>연락처 : {item.phone}</p>
-                    <p>이메일 : {item.mail}</p>
                     <p>
                       보관일 : {item.storage_start_date} ~{" "}
                       {item.storage_end_date}
                     </p>
+                    <p>성함 : {item.name}</p>
+                    <p>연락처 : {item.phone}</p>
+                    <p>이메일 : {item.mail}</p>
                     <p>보관장소 : {item.location}</p>
                     <p>
                       수량 :{" "}
@@ -241,9 +241,9 @@ function Check() {
                         신청일 :{" "}
                         {item.reserve_time.slice(0, 16).replace("T", " ")}
                       </p>
+                      <p>배송일 : {item.delivery_date}</p>
                       <p>성함 : {item.name}</p>
                       <p>연락처 : {item.phone}</p>
-                      <p>배송요청일 : {item.delivery_date}</p>
                       <p>출발지 : {item.delivery_start}</p>
                       <p>도착지 : {item.delivery_arrive}</p>
                       <p>

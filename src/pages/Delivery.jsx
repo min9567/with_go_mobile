@@ -11,6 +11,8 @@ import down from "../images/down.svg";
 import over from "../images/over.svg";
 import swap from "../images/swap.svg";
 
+import TosModal from "../component/TosModal";
+
 function Delivery() {
   const [count, setcount] = useState(0);
   const [twocount, settwocount] = useState(0);
@@ -22,6 +24,9 @@ function Delivery() {
   const [deliveryDate, setDeliveryDate] = useState(null);
   const [placeOptions, setPlaceOptions] = useState([]);
   const [arrivalOptions, setArrivalOptions] = useState([]);
+  const [modal, setModal] = useState(false);
+  const [agreeToTos, setAgreeToTos] = useState(false);
+
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
   const startRef = useRef(null);
@@ -36,6 +41,14 @@ function Delivery() {
       if (input) input.readOnly = true;
     }
   }, []);
+
+  const openModal = () => {
+    setModal(true);
+  };
+
+  const CloseModal = () => {
+    setModal(false);
+  };
 
   const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -115,6 +128,15 @@ function Delivery() {
       });
       return;
     }
+    if (!agreeToTos) {
+      await Swal.fire({
+        icon: "warning",
+        title: '<span style="font-size:20px;">이용약관에 동의해주세요.</span>',
+        confirmButtonText: "확인",
+      });
+      return;
+    }
+    
 
     try {
       const {
@@ -135,7 +157,7 @@ function Delivery() {
         phone,
         startValue,
         endValue,
-        deliveryDate,
+        deliveryDate: deliveryDate.format("YYYY-MM-DD"),
         count,
         twocount,
         indown,
@@ -365,11 +387,23 @@ function Delivery() {
           </h2>
         </div>
         <div className="mt-5">
-          <input type="checkbox" name="ToS" id="ToS" className="cursor-pointer" />
-          <label htmlFor="ToS" className="ml-1 cursor-pointer">이용약관에 동의합니다.</label>
+          <input
+            type="checkbox"
+            name="ToS"
+            id="ToS"
+            className="cursor-pointer"
+            checked={agreeToTos}
+            onChange={(e) => setAgreeToTos(e.target.checked)}
+          />
+          <label htmlFor="ToS" className="ml-1 cursor-pointer">
+            이용약관에 동의합니다.
+          </label>
         </div>
         <div>
-          <button className="mb-5 text-[13px] bg-black text-white">
+          <button
+            className="mb-5 text-[13px] bg-black text-white"
+            onClick={openModal}
+          >
             [ 이용약관 보기 ]
           </button>
         </div>
@@ -388,6 +422,7 @@ function Delivery() {
           </button>
         </div>
       </div>
+      {modal && <TosModal onClose={CloseModal} />}
     </div>
   );
 }
