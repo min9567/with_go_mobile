@@ -12,6 +12,7 @@ import over from "../images/over.svg";
 import swap from "../images/swap.svg";
 
 import TosModal from "../component/TosModal";
+import { useNavigate } from "react-router-dom";
 
 function Delivery() {
   const [count, setcount] = useState(0);
@@ -34,6 +35,8 @@ function Delivery() {
   const dateRef = useRef(null);
 
   const datePickerWrapperRef = useRef(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (datePickerWrapperRef.current) {
@@ -136,52 +139,64 @@ function Delivery() {
       });
       return;
     }
-    
 
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        await Swal.fire({
-          icon: "warning",
-          title: "로그인이 필요합니다.",
-          confirmButtonText: "확인",
-        });
-        return;
-      }
-      const user_id = user.id;
-
-      const res = await axios.post(`${API_BASE_URL}/delivery`, {
-        name,
-        phone,
-        startValue,
-        endValue,
-        deliveryDate: deliveryDate.format("YYYY-MM-DD"),
+    navigate("/delivery/detail", {
+      state: {
         count,
         twocount,
+        startValue,
+        endValue,
+        name,
+        phone,
+        deliveryDate: deliveryDate ? deliveryDate.format("YYYY-MM-DD") : null,
         indown,
-        user_id,
-      });
-      if (res.data.success) {
-        await Swal.fire({
-          icon: "success",
-          title: "저장 성공",
-          confirmButtonText: "확인",
-        });
-        Reset();
-        setTimeout(() => {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }, 300);
-      }
-    } catch (err) {
-      await Swal.fire({
-        icon: "error",
-        title: "저장 실패",
-        text: err.response?.data?.error || err.message,
-        confirmButtonText: "확인",
-      });
-    }
+      },
+    });
+
+    // try {
+    //   const {
+    //     data: { user },
+    //   } = await supabase.auth.getUser();
+    //   if (!user) {
+    //     await Swal.fire({
+    //       icon: "warning",
+    //       title: "로그인이 필요합니다.",
+    //       confirmButtonText: "확인",
+    //     });
+    //     return;
+    //   }
+    //   const user_id = user.id;
+
+    //   const res = await axios.post(`${API_BASE_URL}/delivery`, {
+    //     name,
+    //     phone,
+    //     startValue,
+    //     endValue,
+    //     deliveryDate: deliveryDate.format("YYYY-MM-DD"),
+    //     count,
+    //     twocount,
+    //     indown,
+    //     user_id,
+    //   });
+    //   if (res.data.success) {
+    //     await Swal.fire({
+    //       icon: "success",
+    //       title: "저장 성공",
+    //       confirmButtonText: "확인",
+    //     });
+    //     Reset();
+    //     setTimeout(() => {
+    //       window.scrollTo({ top: 0, behavior: "smooth" });
+    //     }, 300);
+    //   }
+    // } catch (err) {
+    //   await Swal.fire({
+    //     icon: "error",
+    //     title: "저장 실패",
+    //     text: err.response?.data?.error || err.message,
+    //     confirmButtonText: "확인",
+    //   });
+    // }
   };
 
   const Swap = () => {
