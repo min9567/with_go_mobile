@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 
-function DeliveryDetail() {
+function StorageDetail() {
     const { state } = useLocation();
 
     const Payment = () => {
@@ -10,16 +10,16 @@ function DeliveryDetail() {
         return;
       }
 
-      localStorage.setItem("delivery_reservation", JSON.stringify(state));
+      localStorage.setItem("storage_reservation", JSON.stringify(state));
   
       const tossPayments = window.TossPayments("test_ck_24xLea5zVAEGe4ONABL7VQAMYNwW"); 
   
       tossPayments.requestPayment("카드", {
         amount: state.indown,
         orderId: "order_" + new Date().getTime(),
-        orderName: "배송 예약 결제",
+        orderName: "보관 예약 결제",
         customerName: state.name,
-        successUrl: window.location.origin + "/delivery-payment-success?amount=" + state.indown,
+        successUrl: window.location.origin + "/storage-payment-success",
         failUrl: window.location.origin + "/payment-fail"
       });
     };
@@ -34,59 +34,59 @@ function DeliveryDetail() {
           <div className="bg-blue-100 h-8 flex items-center justify-center">
             <h3 className="text-[18px] text-blue-500 font-bold">예약 정보</h3>
           </div>
-          <div className="text-[15px]">
-            <li className="grid grid-cols-2 gap-2 py-1 pl-3">
-              <p>배송일자</p>
-              <span>{state.deliveryDate}</span>
+          <div className="text-[15px] text-center">
+            <li className="grid grid-cols-3 gap-2 py-1 pl-3">
+              <p className="col-span-1 ">배송일자</p>
+              <span className="col-span-2">{state.startDate} ~ {state.endDate}</span>
             </li>
-            <li className="grid grid-cols-2 gap-2 py-1 pl-3">
-              <p>출발지</p>
-              <span>{state.startValue}</span>
-            </li>
-            <li className="grid grid-cols-2 gap-2 py-1 pl-3">
-              <p>도착지</p>
-              <span>{state.endValue}</span>
+            <li className="grid grid-cols-3 gap-2 py-1 pl-3">
+              <p>보관장소</p>
+              <span className="col-span-2">{state.selectValue}</span>
             </li>
           </div>
         </div>
-        <div className="mt-7">
+        <div className="mt-7 text-center">
           <div className="bg-blue-100 h-8 flex items-center justify-center">
             <h3 className="text-[18px] text-blue-500 font-bold">고객정보</h3>
           </div>
           <div>
-            <li className="grid grid-cols-2 gap-2 py-1 pl-3">
+            <li className="grid grid-cols-3 gap-2 py-1 pl-3">
               <p>이름</p>
-              <span>{state.name}</span>
+              <span className="col-span-2">{state.name}</span>
             </li>
-            <li className="grid grid-cols-2 gap-2 py-1 pl-3">
+            <li className="grid grid-cols-3 gap-2 py-1 pl-3">
               <p>연락처</p>
-              <span>{state.phone}</span>
+              <span className="col-span-2">{state.phone}</span>
             </li>
           </div>
         </div>
-        <div className="mt-7">
+        <div className="mt-7 text-center">
           <div className="bg-blue-100 h-8 flex items-center justify-center">
             <h3 className="text-[18px] text-blue-500 font-bold">물품정보</h3>
           </div>
           <div>
-            <li className="grid grid-cols-2 gap-2 py-1 pl-3">
-              <p>26인치이하</p>
-              <span>{state.count}</span>
+            <li className="grid grid-cols-3 gap-2 py-1 pl-3">
+              <p>소형</p>
+              <span className="col-span-2">{state.count}</span>
             </li>
-            <li className="grid grid-cols-2 gap-2 py-1 pl-3">
-              <p>26인치초과</p>
-              <span>{state.twocount}</span>
+            <li className="grid grid-cols-3 gap-2 py-1 pl-3">
+              <p>중형</p>
+              <span className="col-span-2">{state.twocount}</span>
+            </li>
+            <li className="grid grid-cols-3 gap-2 py-1 pl-3">
+              <p>대형</p>
+              <span className="col-span-2">{state.threecount}</span>
             </li>
           </div>
         </div>
-        <div className="mt-7">
+        <div className="mt-7 text-center">
           <div className="bg-blue-100 h-8 flex items-center justify-center">
             <h3 className="text-[18px] text-blue-500 font-bold">결제정보</h3>
           </div>
           <div>
-            <li className="grid grid-cols-2 gap-2 py-1 pl-3">
+            <li className="grid grid-cols-3 gap-2 py-1 pl-3">
               <p>결제 금액</p>
-              <span>{state.indown.toLocaleString()}원</span>
+              <span className="col-span-2">{state.indown.toLocaleString()}원</span>
             </li>
           </div>
         </div>
@@ -101,4 +101,4 @@ function DeliveryDetail() {
   );
 }
 
-export default DeliveryDetail;
+export default StorageDetail;

@@ -19,18 +19,18 @@ const supabase = createClient(
   process.env.SUPABASE_KEY || process.env.VITE_SUPABASE_KEY
 );
 
-app.get('/', (req, res) => {
-  res.send('API 서버 정상 작동 중');
+app.get("/", (req, res) => {
+  res.send("API 서버 정상 작동 중");
 });
 
 app.get("/place-options", async (req, res) => {
-  const { data, error } = await supabase.from("storage_place").select("name");
+  const { data, error } = await supabase.from("storage_place").select("name, address");
   if (error) return res.status(500).json({ error: error.message });
   res.json({ data });
 });
 
 app.get("/arrival-options", async (req, res) => {
-  const { data, error } = await supabase.from("partner_place").select("name");
+  const { data, error } = await supabase.from("partner_place").select("name, address");
   if (error) return res.status(500).json({ error: error.message });
   res.json({ data });
 });

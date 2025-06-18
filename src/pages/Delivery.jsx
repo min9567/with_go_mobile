@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { ConfigProvider, DatePicker } from "antd";
 import { supabase } from "../lib/supabase";
 
@@ -13,6 +13,15 @@ import swap from "../images/swap.svg";
 
 import TosModal from "../component/TosModal";
 import { useNavigate } from "react-router-dom";
+
+function extractRegion(addr) {
+  if (!addr) return "";
+  const 광역시 = addr.match(/(서울|대구|부산|인천|광주|대전|울산|세종)/);
+  if (광역시) return 광역시[1];
+  const 시군 = addr.match(/([가-힣]+시|[가-힣]+군|[가-힣]+구)/);
+  if (시군) return 시군[1].replace(/시|군|구/, "");
+  return "";
+}
 
 function Delivery() {
   const [count, setcount] = useState(0);
@@ -64,7 +73,26 @@ function Delivery() {
       .then((res) => setArrivalOptions(res.data.data));
   }, []);
 
-  const indown = count * 10000 + twocount * 15000;
+  const startObj = placeOptions.find((item) => item.name === startValue);
+  const endObj = arrivalOptions.find((item) => item.name === endValue);
+
+  const indown = useMemo(() => {
+    const startRegion = extractRegion(startObj?.address);
+    const endRegion = extractRegion(endObj?.address);
+
+    let sum = 0;
+    if (count > 0) {
+      sum +=
+        count *
+        (startRegion && endRegion && startRegion === endRegion ? 10000 : 15000);
+    }
+    if (twocount > 0) {
+      sum +=
+        twocount *
+        (startRegion && endRegion && startRegion === endRegion ? 20000 : 25000);
+    }
+    return sum;
+  }, [count, twocount, startObj, endObj]);
 
   const Reset = () => {
     setcount(0);
@@ -215,6 +243,62 @@ function Delivery() {
     return value.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
   };
 
+  // 수량(26인치 이하) 감소
+  const DecreaseCount = () => {
+    if (!startValue || !endValue) {
+      Swal.fire({
+        icon: "warning",
+        title:
+          '<span style="font-size:24px;">출발지와 도착지를</br>선택해주세요.</span>',
+        confirmButtonText: "확인",
+      });
+      return;
+    }
+    setcount((prev) => (prev > 0 ? prev - 1 : 0));
+  };
+
+  // 수량(26인치 이하) 증가
+  const IncreaseCount = () => {
+    if (!startValue || !endValue) {
+      Swal.fire({
+        icon: "warning",
+        title:
+          '<span style="font-size:24px;">출발지와 도착지를</br>선택해주세요.</span>',
+        confirmButtonText: "확인",
+      });
+      return;
+    }
+    setcount((prev) => prev + 1);
+  };
+
+  // 수량(26인치 초과) 감소
+  const DecreaseTwocount = () => {
+    if (!startValue || !endValue) {
+      Swal.fire({
+        icon: "warning",
+        title:
+          '<span style="font-size:24px;">출발지와 도착지를</br>선택해주세요.</span>',
+        confirmButtonText: "확인",
+      });
+      return;
+    }
+    settwocount((prev) => (prev > 0 ? prev - 1 : 0));
+  };
+
+  // 수량(26인치 초과) 증가
+  const IncreaseTwocount = () => {
+    if (!startValue || !endValue) {
+      Swal.fire({
+        icon: "warning",
+        title:
+          '<span style="font-size:24px;">출발지와 도착지를</br>선택해주세요.</span>',
+        confirmButtonText: "확인",
+      });
+      return;
+    }
+    settwocount((prev) => prev + 1);
+  };
+
   return (
     <div className="pt-[93px]">
       <div className="m-3.5 text-center text-3xl font-bold">
@@ -341,7 +425,7 @@ function Delivery() {
         <div className="my-3 flex items-center h-8">
           <button
             className="w-10 rounded-tl-lg rounded-bl-lg bg-blue-500 text-white text-2xl cursor-pointer"
-            onClick={() => setcount(count > 0 ? count - 1 : 0)}
+            onClick={DecreaseCount}
           >
             <span className="relative -top-[2.5px]">-</span>
           </button>
@@ -355,7 +439,7 @@ function Delivery() {
           />
           <button
             className="w-10 rounded-tr-lg rounded-br-lg bg-blue-500 text-white text-2xl cursor-pointer"
-            onClick={() => setcount(count + 1)}
+            onClick={IncreaseCount}
           >
             <span className="relative -top-[1px]">+</span>
           </button>
@@ -371,7 +455,7 @@ function Delivery() {
         <div className="my-3 flex items-center h-8">
           <button
             className="w-10 rounded-tl-lg rounded-bl-lg bg-blue-500 text-white text-2xl cursor-pointer"
-            onClick={() => settwocount(twocount > 0 ? twocount - 1 : 0)}
+            onClick={DecreaseTwocount}
           >
             <span className="relative -top-[2.5px]">-</span>
           </button>
@@ -385,7 +469,7 @@ function Delivery() {
           />
           <button
             className="w-10 rounded-tr-lg rounded-br-lg bg-blue-500 text-white text-2xl cursor-pointer"
-            onClick={() => settwocount(twocount + 1)}
+            onClick={IncreaseTwocount}
           >
             <span className="relative -top-[1px]">+</span>
           </button>
@@ -398,7 +482,7 @@ function Delivery() {
         </div>
         <div>
           <h2>
-            KRW<span className="ml-1.5">{indown}</span>
+            KRW<span className="ml-1.5">{indown.toLocaleString()}</span>
           </h2>
         </div>
         <div className="mt-5">

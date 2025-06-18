@@ -11,6 +11,7 @@ import medium from "../images/medium.svg";
 import large from "../images/large.svg";
 
 import TosModal from "../component/TosModal";
+import { useNavigate } from "react-router-dom";
 
 function Storage() {
   const [count, setcount] = useState(0);
@@ -34,6 +35,8 @@ function Storage() {
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
   const emailRef = useRef(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (datePickerWrapperRef.current) {
@@ -196,52 +199,68 @@ function Storage() {
       return;
     }
 
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        await Swal.fire({
-          icon: "warning",
-          title: '<span style="font-size:24px;">로그인이 필요합니다.</span>',
-          confirmButtonText: "확인",
-        });
-        return;
-      }
-      const user_id = user.id;
-      const API_BASE_URL = import.meta.env.VITE_API_URL;
+    const reservationData = {
+      name,
+      phone,
+      email,
+      startDate: startDate ? startDate.format("YYYY-MM-DD") : "",
+      endDate: endDate ? endDate.format("YYYY-MM-DD") : "",
+      selectValue,
+      count,
+      twocount,
+      threecount,
+      indown,
+    };
 
-      const res = await axios.post(`${API_BASE_URL}/storage`, {
-        name,
-        phone,
-        email,
-        startDate: startDate ? startDate.format("YYYY-MM-DD") : "",
-        endDate: endDate ? endDate.format("YYYY-MM-DD") : "",
-        selectValue,
-        count,
-        twocount,
-        threecount,
-        indown,
-        reservation_country: "Mobile",
-        user_id,
-      });
-      if (res.data.success) {
-        await Swal.fire({
-          icon: "success",
-          title: "저장 성공",
-          confirmButtonText: "확인",
-        });
-        Reset();
-        setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 300);
-      }
-    } catch (err) {
-      await Swal.fire({
-        icon: "error",
-        title: "저장 실패",
-        text: err.response?.data?.error || err.message,
-        confirmButtonText: "확인",
-      });
-    }
+    // StorageDetail로 이동 (예약 데이터 같이 넘김)
+    navigate("/storage/detail", { state: reservationData });
+
+    // try {
+    //   const {
+    //     data: { user },
+    //   } = await supabase.auth.getUser();
+    //   if (!user) {
+    //     await Swal.fire({
+    //       icon: "warning",
+    //       title: '<span style="font-size:24px;">로그인이 필요합니다.</span>',
+    //       confirmButtonText: "확인",
+    //     });
+    //     return;
+    //   }
+    //   const user_id = user.id;
+    //   const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+    //   const res = await axios.post(`${API_BASE_URL}/storage`, {
+    //     name,
+    //     phone,
+    //     email,
+    //     startDate: startDate ? startDate.format("YYYY-MM-DD") : "",
+    //     endDate: endDate ? endDate.format("YYYY-MM-DD") : "",
+    //     selectValue,
+    //     count,
+    //     twocount,
+    //     threecount,
+    //     indown,
+    //     reservation_country: "Mobile",
+    //     user_id,
+    //   });
+    //   if (res.data.success) {
+    //     await Swal.fire({
+    //       icon: "success",
+    //       title: "저장 성공",
+    //       confirmButtonText: "확인",
+    //     });
+    //     Reset();
+    //     setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 300);
+    //   }
+    // } catch (err) {
+    //   await Swal.fire({
+    //     icon: "error",
+    //     title: "저장 실패",
+    //     text: err.response?.data?.error || err.message,
+    //     confirmButtonText: "확인",
+    //   });
+    // }
   };
 
   const formatPhoneNumber = (value) => {
