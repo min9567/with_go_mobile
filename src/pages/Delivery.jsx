@@ -16,13 +16,12 @@ import { useNavigate } from "react-router-dom";
 
 function extractRegion(addr) {
   if (!addr) return "";
-  const 광역시 = addr.match(/(서울|대구|부산|인천|광주|대전|울산|세종)/);
-  if (광역시) return 광역시[1].trim();
-  const 시군 = addr.match(/([가-힣]+시|[가-힣]+군|[가-힣]+구)/);
-  if (시군) return 시군[1].replace(/시|군|구/, "").trim();
+  const 광역시도 = addr.match(/(서울|대구|부산|인천|광주|대전|울산|세종|경기도|강원도|충청북도|충청남도|전라북도|전라남도|경상북도|경상남도|제주특별자치도)/);
+  if (광역시도) return 광역시도[1].replace("특별자치도", "").replace("광역시", "").replace("도", "").trim();
+  const 시군 = addr.match(/([가-힣]{2,})(시|군|구)/);
+  if (시군) return 시군[1].trim();
   return "";
 }
-
 
 function Delivery() {
   const [count, setcount] = useState(0);
@@ -81,17 +80,21 @@ function Delivery() {
     const startRegion = extractRegion(startObj?.address);
     const endRegion = extractRegion(endObj?.address);
 
+    const sameRegion =
+      String(startRegion || "").trim().normalize("NFC") ===
+      String(endRegion || "").trim().normalize("NFC");
+
     let sum = 0;
     if (count > 0) {
       sum +=
         count *
-        (startRegion && endRegion && startRegion.trim() === endRegion.trim() ? 10000 : 15000)
+        (sameRegion ? 10000 : 15000)
 
     }
     if (twocount > 0) {
       sum +=
         twocount *
-        (startRegion && endRegion && startRegion.trim() === endRegion.trim() ? 20000 : 25000);
+        (sameRegion ? 20000 : 25000);
     }
     return sum;
   }, [count, twocount, startObj, endObj]);

@@ -143,7 +143,9 @@ const login = () => {
         {!isKakaoInApp && (
           <>
             <div>
-              <p className="mt-2 text-[15px] text-center text-white">안드로이드는<br />해당 이미지 클릭 후 바로 이용가능합니다.</p>
+              <p className="mt-2 text-[15px] text-center text-white">
+                3안드로이드는<br />해당 이미지 클릭 후 바로 이용가능합니다.
+              </p>
             </div>
             <div className="mt-5">
               <button className="mb-5 text-[15px] text-white"
