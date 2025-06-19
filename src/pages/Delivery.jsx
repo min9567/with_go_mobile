@@ -388,15 +388,11 @@ function Delivery() {
               className="pl-1 py-0.5 w-40 border border-gray-400 rounded"
               value={name}
               ref={nameRef}
-              onCompositionStart={() => setIsComposing(true)}
-              onCompositionEnd={() => setIsComposing(false)}
-              onKeyDown={(e) => {
-                if (isComposing || e.key.length !== 1) return;
-                if (!/^[a-zA-Z가-힣]$/.test(e.key)) {
-                  e.preventDefault();
-                }
+              onChange={e => {
+                // 숫자만 제거, 한글 영어 공백 모두 허용
+                const val = e.target.value.replace(/[0-9]/g, "");
+                setName(val);
               }}
-              onChange={(e) => setName(e.target.value)}
             />
           </div>
           <div className="mt-3">

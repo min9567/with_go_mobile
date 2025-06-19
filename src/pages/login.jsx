@@ -8,12 +8,24 @@ import bbiyo from "../images/bbiyo.png";
 import Swal from "sweetalert2";
 
 import AndroiModal from "../component/AndroidModal.jsx"
+import ApplModal from "../component/AppleModal.jsx"
+import SaApplModal from "../component/SaAppleModal.jsx"
 
 const login = () => {
   const navigate = useNavigate();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [AndroidModal, setAndroidModal] = useState(false);
+  const [AppleModal, setAppleModal] = useState(false);
+  const [SaAppleModal, setSaAppleModal] = useState(false);
+
+  const [isKakaoInApp, setIsKakaoInApp] = useState(false);
+
+  useEffect(() => {
+    if (/KAKAOTALK/i.test(navigator.userAgent)) {
+      setIsKakaoInApp(true);
+    }
+  }, []);
 
   const AndroidModalOpen = () => {
     setAndroidModal(true);
@@ -21,6 +33,22 @@ const login = () => {
 
   const AndroidModalClose = () => {
     setAndroidModal(false);
+  };
+
+  const AppleModalOpen = () => {
+    setAppleModal(true);
+  };
+
+  const AppleModalClose = () => {
+    setAppleModal(false);
+  };
+
+  const SaAppleModalOpen = () => {
+    setSaAppleModal(true);
+  };
+
+  const SaAppleModalClose = () => {
+    setSaAppleModal(false);
   };
 
   useEffect(() => {
@@ -112,20 +140,40 @@ const login = () => {
             />
           </button>
         </div>
-        <div>
-          <button
-          className="mt-5 mb-1 text-[13px] text-white"
-          onClick={AndroidModalOpen}>
-            [ 안드로이드/Android 설치방법 ]
-          </button>
-        </div>
-        <div>
-          <button className="mb-5 text-[13px] text-white">
-            [ 애플/iPhone 설치방법 ]
-          </button>
-        </div>
+        {!isKakaoInApp && (
+          <>
+            <div>
+              <p className="mt-2 text-[15px] text-center text-white">안드로이드는<br />해당 이미지 클릭 후 바로 이용가능합니다.</p>
+            </div>
+            <div className="mt-5">
+              <button className="mb-5 text-[15px] text-white"
+                onClick={SaAppleModalOpen}>
+                [ 애플/iPhone 설치방법 ]
+              </button>
+            </div>
+          </>
+        )}
+        {isKakaoInApp && (
+          <>
+            <div>
+              <button
+                className="mt-5 mb-1 text-[15px] text-white"
+                onClick={AndroidModalOpen}>
+                [ 안드로이드/Android 설치방법 ]
+              </button>
+            </div>
+            <div>
+              <button className="mb-5 text-[15px] text-white"
+                onClick={AppleModalOpen}>
+                [ 애플/iPhone 설치방법 ]
+              </button>
+            </div>
+          </>
+        )}
       </div>
       {AndroidModal && <AndroiModal onClose={AndroidModalClose} />}
+      {AppleModal && <ApplModal onClose={AppleModalClose} />}
+      {SaAppleModal && <SaApplModal onClose={SaAppleModalClose} />}
     </div>
   );
 };
