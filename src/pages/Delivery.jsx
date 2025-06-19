@@ -17,11 +17,12 @@ import { useNavigate } from "react-router-dom";
 function extractRegion(addr) {
   if (!addr) return "";
   const 광역시 = addr.match(/(서울|대구|부산|인천|광주|대전|울산|세종)/);
-  if (광역시) return 광역시[1];
+  if (광역시) return 광역시[1].trim();
   const 시군 = addr.match(/([가-힣]+시|[가-힣]+군|[가-힣]+구)/);
-  if (시군) return 시군[1].replace(/시|군|구/, "");
+  if (시군) return 시군[1].replace(/시|군|구/, "").trim();
   return "";
 }
+
 
 function Delivery() {
   const [count, setcount] = useState(0);
@@ -84,12 +85,13 @@ function Delivery() {
     if (count > 0) {
       sum +=
         count *
-        (startRegion && endRegion && startRegion === endRegion ? 10000 : 15000);
+        (startRegion && endRegion && startRegion.trim() === endRegion.trim() ? 10000 : 15000)
+
     }
     if (twocount > 0) {
       sum +=
         twocount *
-        (startRegion && endRegion && startRegion === endRegion ? 20000 : 25000);
+        (startRegion && endRegion && startRegion.trim() === endRegion.trim() ? 20000 : 25000);
     }
     return sum;
   }, [count, twocount, startObj, endObj]);
