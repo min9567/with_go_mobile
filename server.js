@@ -24,13 +24,17 @@ app.get("/", (req, res) => {
 });
 
 app.get("/place-options", async (req, res) => {
-  const { data, error } = await supabase.from("storage_place").select("name, address");
+  const { data, error } = await supabase
+    .from("storage_place")
+    .select("name, address");
   if (error) return res.status(500).json({ error: error.message });
   res.json({ data });
 });
 
 app.get("/arrival-options", async (req, res) => {
-  const { data, error } = await supabase.from("partner_place").select("name, address");
+  const { data, error } = await supabase
+    .from("partner_place")
+    .select("name, address");
   if (error) return res.status(500).json({ error: error.message });
   res.json({ data });
 });
@@ -105,6 +109,22 @@ app.post("/my-delivery-list", async (req, res) => {
     .eq("user_id", user_id);
   if (error) return res.status(500).json({ error: error.message });
   res.json({ data });
+});
+
+app.post("/delivery-info", async (req, res) => {
+  const { re_num } = req.body;
+  const { data, error } = await supabase
+    .from("deliveryList")
+    .select("driver_name, driver_phone")
+    .eq("re_num", re_num)
+    .single();
+  if (error || !data) {
+    return res.json({
+      driver_name: null,
+      driver_phone: null,
+    });
+  }
+  res.json(data);
 });
 
 app.post("/storage", async (req, res) => {
