@@ -119,7 +119,6 @@ app.post("/storage", async (req, res) => {
     twocount,
     threecount,
     indown,
-    reservation_country,
     user_id,
   } = req.body;
 
@@ -137,7 +136,6 @@ app.post("/storage", async (req, res) => {
         medium: twocount,
         large: threecount,
         price: indown,
-        reservation_country: "Mobile",
         user_id,
       },
     ])

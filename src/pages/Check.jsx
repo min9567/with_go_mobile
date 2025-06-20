@@ -206,12 +206,16 @@ function Check() {
                     >
                       진행 상태
                     </button>
-                    <button
-                      className="w-40 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer"
-                      onClick={() => StorageDelete(item.reservation_number)}
-                    >
-                      신청 취소
-                    </button>
+                    {!["완료", "보관중", "보관완료"].includes(
+                      item.situation
+                    ) && (
+                      <button
+                        className="w-40 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer"
+                        onClick={() => StorageDelete(item.reservation_number)}
+                      >
+                        신청 취소
+                      </button>
+                    )}
                   </div>
                 </div>
               ))
@@ -263,12 +267,16 @@ function Check() {
                       >
                         배송 상태
                       </button>
-                      <button
-                        className="w-40 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer"
-                        onClick={() => DeliveryDelete(item.re_num)}
-                      >
-                        신청 취소
-                      </button>
+                      {!["배송대기", "배송중", "배송완료"].includes(
+                        item.situation
+                      ) && (
+                        <button
+                          className="w-40 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer"
+                          onClick={() => DeliveryDelete(item.re_num)}
+                        >
+                          신청 취소
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))

@@ -43,7 +43,6 @@ function StoragePayment() {
           twocount: reservation.twocount,
           threecount: reservation.threecount,
           indown: reservation.indown,
-          reservation_country: "Mobile",
           user_id,
         });
 

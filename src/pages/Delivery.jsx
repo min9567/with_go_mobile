@@ -307,23 +307,6 @@ function Delivery() {
       <div className="m-3.5 text-center text-3xl font-bold">
         <h1>배송예약</h1>
       </div>
-      <div style={{ color: "red", fontSize: 12 }}>
-        count: {count}, twocount: {twocount}
-        <br /><br />
-        startValue: {startValue} / endValue: {endValue}
-        <br /><br />
-        placeOptions: {JSON.stringify(placeOptions)}
-        <br /><br />
-        arrivalOptions: {JSON.stringify(arrivalOptions)}
-        <br /><br />
-        startObj: {JSON.stringify(startObj)}
-        <br /><br />
-        endObj: {JSON.stringify(endObj)}
-        <br /><br />
-        startRegion: {extractRegion(startObj?.address || "")}
-        <br /><br />
-        endRegion: {extractRegion(endObj?.address || "")}
-      </div>
       <div className="flex flex-col items-center">
         <div>
           <div ref={datePickerWrapperRef}>
