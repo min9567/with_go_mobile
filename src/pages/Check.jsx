@@ -267,7 +267,7 @@ function Check() {
                       >
                         배송 상태
                       </button>
-                      {!["배송대기", "배송중", "배송완료"].includes(
+                      {!["배송대기", "배송중", "배송완료", "완료"].includes(
                         item.situation
                       ) && (
                         <button
