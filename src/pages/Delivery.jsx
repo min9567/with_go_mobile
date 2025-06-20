@@ -16,16 +16,10 @@ import { useNavigate } from "react-router-dom";
 
 function extractRegion(addr) {
   if (!addr) return "";
-
-  // 1. "서울", "대구" 등 광역시
   const 광역시 = addr.match(/(서울|대구|부산|인천|광주|대전|울산|세종)/);
   if (광역시) return 광역시[1];
-
-  // 2. "경주시", "경산시", "수성구", "창원군" 등
   const 시군 = addr.match(/([가-힣]+시|[가-힣]+군|[가-힣]+구)/);
   if (시군) return 시군[1].replace(/시|군|구/, "");
-
-  // 3. 마지막 fallback: 첫 번째 한글 단어
   const 단어 = addr.match(/([가-힣]+)/);
   if (단어) return 단어[1];
 
@@ -88,7 +82,6 @@ function Delivery() {
   const indown = useMemo(() => {
     const startRegion = extractRegion(startObj?.address || "").trim();
     const endRegion = extractRegion(endObj?.address || "").trim();
-
 
     let sum = 0;
     if (count > 0) {
@@ -314,6 +307,23 @@ function Delivery() {
       <div className="m-3.5 text-center text-3xl font-bold">
         <h1>배송예약</h1>
       </div>
+      <div style={{ color: "red", fontSize: 12 }}>
+        count: {count}, twocount: {twocount}
+        <br /><br />
+        startValue: {startValue} / endValue: {endValue}
+        <br /><br />
+        placeOptions: {JSON.stringify(placeOptions)}
+        <br /><br />
+        arrivalOptions: {JSON.stringify(arrivalOptions)}
+        <br /><br />
+        startObj: {JSON.stringify(startObj)}
+        <br /><br />
+        endObj: {JSON.stringify(endObj)}
+        <br /><br />
+        startRegion: {extractRegion(startObj?.address || "")}
+        <br /><br />
+        endRegion: {extractRegion(endObj?.address || "")}
+      </div>
       <div className="flex flex-col items-center">
         <div>
           <div ref={datePickerWrapperRef}>
@@ -398,7 +408,7 @@ function Delivery() {
               className="pl-1 py-0.5 w-40 border border-gray-400 rounded"
               value={name}
               ref={nameRef}
-              onChange={e => {
+              onChange={(e) => {
                 // 숫자만 제거, 한글 영어 공백 모두 허용
                 const val = e.target.value.replace(/[0-9]/g, "");
                 setName(val);
