@@ -90,16 +90,46 @@ app.post("/delivery", async (req, res) => {
   res.json({ success: true, data });
 });
 
-app.post("/delivery-delete", async (req, res) => {
+app.post("/delivery-cancel", async (req, res) => {
   const { re_num, user_id } = req.body;
+
+  // 1. 이전 상태 조회
+  const { data: prevRow, error: prevError } = await supabase
+    .from("delivery")
+    .select("situation")
+    .eq("re_num", re_num)
+    .eq("user_id", user_id)
+    .single();
+
+  if (prevError) return res.status(500).json({ error: prevError.message });
+
+  const prevStatus = prevRow?.situation || "";
+
+  // 2. 상태 업데이트
   const { error } = await supabase
     .from("delivery")
-    .delete()
+    .update({ situation: "취소" })
     .eq("re_num", re_num)
     .eq("user_id", user_id);
+
   if (error) return res.status(500).json({ error: error.message });
+
+  // 3. 로그 남기기
+  await supabase.from("status_logs").insert([
+    {
+      table_name: "delivery",
+      key_value: re_num,
+      prev_status: prevStatus,
+      new_status: "취소",
+      updated_at: getKstISOString(),
+      received_at: getKstISOString(),
+      operator: "사용자",
+    },
+  ]);
+
   res.json({ success: true });
 });
+
 
 app.post("/my-delivery-list", async (req, res) => {
   const { user_id } = req.body;
@@ -157,6 +187,7 @@ app.post("/storage", async (req, res) => {
         large: threecount,
         price: indown,
         user_id,
+        situation: "접수"
       },
     ])
     .select()
@@ -182,17 +213,46 @@ app.post("/storage", async (req, res) => {
   res.json({ success: true, data });
 });
 
-app.post("/storage-delete", async (req, res) => {
+app.post("/storage-cancel", async (req, res) => {
   const { reservation_number, user_id } = req.body;
 
+  // 1. 이전 상태 조회
+  const { data: prevRow, error: prevError } = await supabase
+    .from("storage")
+    .select("situation")
+    .eq("reservation_number", reservation_number)
+    .eq("user_id", user_id)
+    .single();
+
+  if (prevError) return res.status(500).json({ error: prevError.message });
+
+  const prevStatus = prevRow?.situation || "";
+
+  // 2. 상태값 업데이트
   const { error } = await supabase
     .from("storage")
-    .delete()
+    .update({ situation: "취소" })
     .eq("reservation_number", reservation_number)
     .eq("user_id", user_id);
+
   if (error) return res.status(500).json({ error: error.message });
+
+  // 3. 로그 남기기
+  await supabase.from("status_logs").insert([
+    {
+      table_name: "storage",
+      key_value: reservation_number,
+      prev_status: prevStatus,     // 실제 이전 상태값이 들어감
+      new_status: "취소",
+      updated_at: getKstISOString(),
+      received_at: getKstISOString(),
+      operator: "사용자",
+    },
+  ]);
+
   res.json({ success: true });
 });
+
 
 app.post("/my-storage-list", async (req, res) => {
   const { user_id } = req.body;

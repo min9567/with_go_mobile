@@ -12,7 +12,7 @@ function Check() {
   const [modalOpen, setModalOpen] = useState(false);
   const [dModalOpen, setDModalOpen] = useState(false);
   const [progressData, setProgressData] = useState(null);
-  const [activeTab, setActiveTab] = useState("storage");
+  const [activeTab, setActiveTab] = useState("delivery");
 
   const ShowStorageProgress = (item) => {
     setProgressData(item);
@@ -51,8 +51,9 @@ function Check() {
         .from("delivery")
         .select("*")
         .eq("user_id", myUuid);
-      setStorageList(storageData || []);
-      setDeliveryList(deliveryData || []);
+
+      setStorageList((storageData || []).filter(item => item.situation !== "취소"));
+      setDeliveryList((deliveryData || []).filter(item => item.situation !== "취소"));
     };
     fetchMyData();
   }, []);
@@ -79,19 +80,18 @@ function Check() {
 
     if (result.isConfirmed) {
       try {
-        const res = await axios.post(`${API_BASE_URL}/storage-delete`, {
+        const res = await axios.post(`${API_BASE_URL}/storage-cancel`, {
           reservation_number,
           user_id,
         });
         if (res.data.success) {
           setStorageList((prev) =>
-            prev.filter(
-              (item) => item.reservation_number !== reservation_number
-            )
+            prev.filter(item => item.reservation_number !== reservation_number)
           );
           Swal.fire("취소 완료", "신청이 취소되었습니다.", "success");
           window.scrollTo({ top: 0, behavior: "smooth" });
-        } else {
+        }
+        else {
           Swal.fire("오류", "삭제 실패", "error");
         }
       } catch (err) {
@@ -122,13 +122,13 @@ function Check() {
 
     if (result.isConfirmed) {
       try {
-        const res = await axios.post(`${API_BASE_URL}/delivery-delete`, {
+        const res = await axios.post(`${API_BASE_URL}/delivery-cancel`, {
           re_num,
           user_id,
         });
         if (res.data.success) {
           setDeliveryList((prev) =>
-            prev.filter((item) => item.re_num !== re_num)
+            prev.filter(item => item.re_num !== re_num)
           );
           Swal.fire("취소 완료", "신청이 취소되었습니다.", "success");
         } else {
@@ -147,22 +147,20 @@ function Check() {
       </div>
       <div>
         <div className="flex justify-around items-center">
-          <button onClick={() => setActiveTab("storage")}>
-            <h3
-              className={`text-[20px] ${
-                activeTab === "storage" ? "font-bold text-blue-600" : ""
-              }`}
-            >
-              보 관
-            </h3>
-          </button>
           <button onClick={() => setActiveTab("delivery")}>
             <h3
-              className={`text-[20px] ${
-                activeTab === "delivery" ? "font-bold text-blue-600" : ""
-              }`}
+              className={`text-[20px] ${activeTab === "delivery" ? "font-bold text-blue-600" : ""
+                }`}
             >
               배 송
+            </h3>
+          </button>
+          <button onClick={() => setActiveTab("storage")}>
+            <h3
+              className={`text-[20px] ${activeTab === "storage" ? "font-bold text-blue-600" : ""
+                }`}
+            >
+              보 관
             </h3>
           </button>
         </div>
@@ -209,13 +207,13 @@ function Check() {
                     {!["완료", "보관중", "보관완료"].includes(
                       item.situation
                     ) && (
-                      <button
-                        className="w-40 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer"
-                        onClick={() => StorageDelete(item.reservation_number)}
-                      >
-                        신청 취소
-                      </button>
-                    )}
+                        <button
+                          className="w-40 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer"
+                          onClick={() => StorageDelete(item.reservation_number)}
+                        >
+                          신청 취소
+                        </button>
+                      )}
                   </div>
                 </div>
               ))
@@ -270,13 +268,13 @@ function Check() {
                       {!["배송대기", "배송중", "배송완료", "완료"].includes(
                         item.situation
                       ) && (
-                        <button
-                          className="w-40 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer"
-                          onClick={() => DeliveryDelete(item.re_num)}
-                        >
-                          신청 취소
-                        </button>
-                      )}
+                          <button
+                            className="w-40 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer"
+                            onClick={() => DeliveryDelete(item.re_num)}
+                          >
+                            신청 취소
+                          </button>
+                        )}
                     </div>
                   </div>
                 ))
