@@ -12,7 +12,7 @@ export default defineConfig({
       includeAssets: ["favicon.ico", "robots.txt", "apple-touch-icon.png"],
       manifest: {
         name: "WITHGOAPP",
-        short_name: "MobilePwa",
+        short_name: "WITHGO",
         start_url: "/",
         display: "standalone",
         background_color: "#ffffff",
