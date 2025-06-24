@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import Modal from "../component/StorageModal";
 import DModal from "../component/DeliveryModal";
+import DeliveryPhoto from "../component/DeliveryPhoto";
 
 function Check() {
   const [storageList, setStorageList] = useState([]);
@@ -267,6 +268,12 @@ function Check() {
                         {item.over > 0 && <span>26인치이상 {item.over}개</span>}
                       </p>
                       <p>결제금액 : {item.price.toLocaleString()}원</p>
+                    </div>
+                    <div className="mb-3">
+                      <DeliveryPhoto
+                        re_num={item.re_num}
+                        situation={item.situation}
+                      />
                     </div>
                     <div className="flex justify-center items-center">
                       <button
