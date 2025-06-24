@@ -14,47 +14,33 @@ function Check() {
   const [progressData, setProgressData] = useState(null);
   const [activeTab, setActiveTab] = useState("delivery");
 
-  const ShowStorageProgress = (item) => {
-    setProgressData(item);
-    setModalOpen(true);
-  };
+  const fetchMyData = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+    const myUuid = user.id;
 
-  const ShowDeliveryProgress = (item) => {
-    setProgressData(item);
-    setDModalOpen(true);
-  };
+    const { data: storageData } = await supabase
+      .from("storage")
+      .select("*")
+      .eq("user_id", myUuid)
+      .order("reservation_time", { ascending: false });
 
-  const CloseModal = () => {
-    setModalOpen(false);
-    setProgressData(null);
-  };
-  const CloseDModal = () => {
-    setDModalOpen(false);
-    setProgressData(null);
+    const { data: deliveryData } = await supabase
+      .from("delivery")
+      .select("*")
+      .eq("user_id", myUuid);
+
+    setStorageList(
+      (storageData || []).filter((item) => item.situation !== "취소")
+    );
+    setDeliveryList(
+      (deliveryData || []).filter((item) => item.situation !== "취소")
+    );
   };
 
   useEffect(() => {
-    const fetchMyData = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-      const myUuid = user.id;
-
-      const { data: storageData } = await supabase
-        .from("storage")
-        .select("*")
-        .eq("user_id", myUuid)
-        .order("reservation_time", { ascending: false });
-
-      const { data: deliveryData } = await supabase
-        .from("delivery")
-        .select("*")
-        .eq("user_id", myUuid);
-
-      setStorageList((storageData || []).filter(item => item.situation !== "취소"));
-      setDeliveryList((deliveryData || []).filter(item => item.situation !== "취소"));
-    };
     fetchMyData();
   }, []);
 
@@ -86,12 +72,13 @@ function Check() {
         });
         if (res.data.success) {
           setStorageList((prev) =>
-            prev.filter(item => item.reservation_number !== reservation_number)
+            prev.filter(
+              (item) => item.reservation_number !== reservation_number
+            )
           );
           Swal.fire("취소 완료", "신청이 취소되었습니다.", "success");
           window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-        else {
+        } else {
           Swal.fire("오류", "삭제 실패", "error");
         }
       } catch (err) {
@@ -128,7 +115,7 @@ function Check() {
         });
         if (res.data.success) {
           setDeliveryList((prev) =>
-            prev.filter(item => item.re_num !== re_num)
+            prev.filter((item) => item.re_num !== re_num)
           );
           Swal.fire("취소 완료", "신청이 취소되었습니다.", "success");
         } else {
@@ -140,6 +127,27 @@ function Check() {
     }
   };
 
+  const ShowStorageProgress = (item) => {
+    setProgressData(item);
+    setModalOpen(true);
+  };
+
+  const ShowDeliveryProgress = (item) => {
+    setProgressData(item);
+    setDModalOpen(true);
+  };
+
+  const CloseModal = () => {
+    setModalOpen(false);
+    setProgressData(null);
+    fetchMyData();
+  };
+  const CloseDModal = () => {
+    setDModalOpen(false);
+    setProgressData(null);
+    fetchMyData();
+  };
+
   return (
     <div className="pt-[93px]">
       <div className="m-3.5 text-center text-3xl font-bold">
@@ -149,16 +157,18 @@ function Check() {
         <div className="flex justify-around items-center">
           <button onClick={() => setActiveTab("delivery")}>
             <h3
-              className={`text-[20px] ${activeTab === "delivery" ? "font-bold text-blue-600" : ""
-                }`}
+              className={`text-[20px] ${
+                activeTab === "delivery" ? "font-bold text-blue-600" : ""
+              }`}
             >
               배 송
             </h3>
           </button>
           <button onClick={() => setActiveTab("storage")}>
             <h3
-              className={`text-[20px] ${activeTab === "storage" ? "font-bold text-blue-600" : ""
-                }`}
+              className={`text-[20px] ${
+                activeTab === "storage" ? "font-bold text-blue-600" : ""
+              }`}
             >
               보 관
             </h3>
@@ -207,13 +217,13 @@ function Check() {
                     {!["완료", "보관중", "보관완료"].includes(
                       item.situation
                     ) && (
-                        <button
-                          className="w-40 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer"
-                          onClick={() => StorageDelete(item.reservation_number)}
-                        >
-                          신청 취소
-                        </button>
-                      )}
+                      <button
+                        className="w-40 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer"
+                        onClick={() => StorageDelete(item.reservation_number)}
+                      >
+                        신청 취소
+                      </button>
+                    )}
                   </div>
                 </div>
               ))
@@ -268,13 +278,13 @@ function Check() {
                       {!["배송대기", "배송중", "배송완료", "완료"].includes(
                         item.situation
                       ) && (
-                          <button
-                            className="w-40 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer"
-                            onClick={() => DeliveryDelete(item.re_num)}
-                          >
-                            신청 취소
-                          </button>
-                        )}
+                        <button
+                          className="w-40 h-8 rounded-lg bg-red-200 hover:bg-red-600 text-gray-600 hover:text-white cursor-pointer"
+                          onClick={() => DeliveryDelete(item.re_num)}
+                        >
+                          신청 취소
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))
