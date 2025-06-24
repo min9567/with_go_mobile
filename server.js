@@ -3,6 +3,7 @@ const cors = require("cors");
 const { createClient } = require("@supabase/supabase-js");
 require("dotenv").config();
 
+
 function getKstISOString() {
   const now = new Date();
   const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
@@ -13,11 +14,6 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-
-const supabase = createClient(
-  process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL,
-  process.env.SUPABASE_KEY || process.env.VITE_SUPABASE_KEY
-);
 
 app.get("/", (req, res) => {
   res.send("API 서버 정상 작동 중");

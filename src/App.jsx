@@ -1,10 +1,12 @@
 import { Route, Routes, useLocation } from "react-router-dom";
 
+
 import "./App.css";
 
 import Header from "./layout/header";
 import ScrollTop from "./component/ScrollTop";
 import PrivateRoute from "./component/PrivateRoute"
+import PushInit from "./component/PushInit";
 
 import Delivery from "./pages/Delivery";
 import DeliveryDetail from "./pages/DeliveryDetail";
@@ -17,16 +19,13 @@ import StoragePayment from "./pages/StoragePayment";
 import Check from "./pages/Check";
 import Login from "./pages/login";
 
-
-
-
-
-function App() {
+    function App() {
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
 
   return (
     <>
+      <PushInit />
       <ScrollTop />
       {!isLoginPage && <Header />}
       <Routes>
