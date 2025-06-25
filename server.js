@@ -141,13 +141,15 @@ app.post("/delivery-info", async (req, res) => {
   const { re_num } = req.body;
   const { data, error } = await supabase
     .from("deliveryList")
-    .select("driver_name, driver_phone")
+    .select("driver_name, driver_phone, photo_url, f_time")
     .eq("re_num", re_num)
     .single();
   if (error || !data) {
     return res.json({
       driver_name: null,
       driver_phone: null,
+      photo_url: null,
+      f_time: null
     });
   }
   res.json(data);
