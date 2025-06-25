@@ -194,7 +194,6 @@ function Check() {
                     </p>
                     <p>성함 : {item.name}</p>
                     <p>연락처 : {item.phone}</p>
-                    <p>이메일 : {item.mail}</p>
                     <p>보관장소 : {item.location}</p>
                     <p>
                       수량 :{" "}
