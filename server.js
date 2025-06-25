@@ -179,7 +179,6 @@ app.post("/storage", async (req, res) => {
       {
         name,
         phone,
-        mail: email,
         storage_start_date: startDate,
         storage_end_date: endDate,
         location: selectValue,
