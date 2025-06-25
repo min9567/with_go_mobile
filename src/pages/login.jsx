@@ -144,7 +144,7 @@ const login = () => {
           <>
             <div>
               <p className="mt-2 text-[15px] text-center text-white">
-                안드로이드는<br />설치 후 바로 이용가능합니다.
+                안드로이드는<br />터치시 바로 설치가능합니다.
               </p>
             </div>
             <div className="mt-5">
