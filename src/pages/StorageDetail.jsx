@@ -37,7 +37,7 @@ function StorageDetail() {
   return (
     <div className="mt-[93px] p-6">
       <div className="text-center">
-        <h1 className="text-xl font-bold mb-4 text-center">배송 예약 상세</h1>
+        <h1 className="text-xl font-bold mb-4 text-center">보관 예약 상세</h1>
       </div>
       <div>
         <div>
@@ -46,7 +46,7 @@ function StorageDetail() {
           </div>
           <div className="text-[15px] text-center">
             <li className="grid grid-cols-3 gap-2 py-1 pl-3">
-              <p className="col-span-1 ">배송일자</p>
+              <p className="col-span-1 ">보관일자</p>
               <span className="col-span-2">
                 {state.startDate} ~ {state.endDate}
               </span>
