@@ -163,7 +163,6 @@ app.post("/storage", async (req, res) => {
   const {
     name,
     phone,
-    email,
     startDate,
     endDate,
     selectValue,

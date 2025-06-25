@@ -22,7 +22,6 @@ function Storage() {
   const [endDate, setEndDate] = useState(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
   const [placeOptions, setPlaceOptions] = useState([]);
   const [agreeToTos, setAgreeToTos] = useState(false);
   const [isComposing, setIsComposing] = useState(false);
@@ -34,7 +33,6 @@ function Storage() {
   const placeRef = useRef(null);
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
-  const emailRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -77,15 +75,6 @@ function Storage() {
     }
   };
 
-  const EmailChange = (e) => {
-    const v = e.target.value;
-    if (isComposing) {
-      setEmail(v);
-    } else {
-      setEmail(v.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, ""));
-    }
-  };
-
   const indown = count * 1000 + twocount * 3000 + threecount * 5000;
 
   const Reset = () => {
@@ -97,7 +86,6 @@ function Storage() {
     setEndDate(null);
     setName("");
     setPhone("");
-    setEmail("");
   };
 
   const Submit = async () => {
@@ -155,32 +143,6 @@ function Storage() {
       return;
     }
 
-    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-    if (!emailRegex.test(email)) {
-      if (!email) {
-        await Swal.fire({
-          icon: "warning",
-          title: '<span style="font-size:20px;">이메일을 입력해주세요.</span>',
-          confirmButtonText: "확인",
-        });
-        emailRef.current?.focus();
-        return;
-      }
-
-      const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-      if (!emailRegex.test(email)) {
-        await Swal.fire({
-          icon: "warning",
-          title:
-            '<span style="font-size:20px;">유효한 이메일 형식이 아닙니다.</span>',
-          text: "예) example@domain.com",
-          confirmButtonText: "확인",
-        });
-        emailRef.current?.focus();
-        return;
-      }
-    }
-
     if (count + twocount + threecount === 0) {
       await Swal.fire({
         icon: "warning",
@@ -202,7 +164,6 @@ function Storage() {
     const reservationData = {
       name,
       phone,
-      email,
       startDate: startDate ? startDate.format("YYYY-MM-DD") : "",
       endDate: endDate ? endDate.format("YYYY-MM-DD") : "",
       selectValue,
@@ -375,22 +336,6 @@ function Storage() {
               onChange={PhoneChange}
               inputMode="numeric"
               maxLength={13}
-            />
-          </div>
-          <div className="mt-3">
-            <span>이</span>
-            <span className="ml-[7.5px]">메</span>
-            <span className="ml-[7.5px]">일 : </span>
-            <input
-              type="email"
-              className="pl-1 py-0.5 w-40 border border-gray-400 rounded"
-              value={email}
-              onChange={EmailChange}
-              onCompositionStart={() => setIsComposing(true)}
-              onCompositionEnd={(e) => {
-                setIsComposing(false);
-                setEmail((prev) => prev.replace(/[가-힣ㄱ-ㅎ]/g, ""));
-              }}
             />
           </div>
         </div>
