@@ -43,13 +43,18 @@ function Storage() {
     }
   }, []);
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchPlaces = async () => {
-      const [{ data: data1 }, { data: data2 }] = await Promise.all([
-        supabase.from("storage_place").select("name"),
-        supabase.from("partner_place").select("name"),
+      const [res1, res2] = await Promise.all([
+        axios.get(`${API_BASE_URL}/place-options`),
+        axios.get(`${API_BASE_URL}/arrival-options`),
       ]);
-
+      // 응답에서 data 배열 추출
+      const data1 = res1.data.data || [];
+      const data2 = res2.data.data || [];
+  
       const allOptions = [
         ...new Set([...data1.map((x) => x.name), ...data2.map((x) => x.name)]),
       ];
