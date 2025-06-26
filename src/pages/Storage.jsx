@@ -51,7 +51,6 @@ function Storage() {
         axios.get(`${API_BASE_URL}/place-options`),
         axios.get(`${API_BASE_URL}/arrival-options`),
       ]);
-      // 응답에서 data 배열 추출
       const data1 = res1.data.data || [];
       const data2 = res2.data.data || [];
   
