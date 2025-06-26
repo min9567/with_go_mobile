@@ -359,52 +359,6 @@ app.post("/subscribe", async (req, res) => {
   res.status(200).json({ message: "구독 성공", received: true });
 });
 
-// ✅ 푸시 전송 API
-app.post("/send", async (req, res) => {
-  const { title, body, url } = req.body;
-  const payload = JSON.stringify({ title, body, url });
-
-  const { data: subscribers, error } = await supabase
-      .from("subscription")
-      .select("*");
-  console.log("알람 송신 전 조회 결과 : ",subscribers);
-  if (error) {
-    console.error("❌ Supabase SELECT 실패", error);
-    return res.status(500).json({ error: error.message });
-  }
-
-  if (!subscribers || subscribers.length === 0) {
-    return res.status(400).json({ error: "등록된 구독 정보가 없습니다." });
-  }
-
-  const results = await Promise.allSettled(
-      subscribers.map((s, idx) => {
-        let subObj = s.subscription;
-
-        try {
-          if (typeof subObj === "string") {
-            subObj = JSON.parse(subObj);
-            if (typeof subObj === "string") {
-              subObj = JSON.parse(subObj);
-            }
-          }
-        } catch (e) {
-          console.error(`❌ [${idx}] JSON 파싱 실패:`, e);
-          return Promise.reject(e);
-        }
-
-        return webpush.sendNotification(subObj, payload).then(res=>console.log("알림전송성공:",res)).catch((err) => {
-          console.error(`🚨 [${idx}] 푸시 전송 실패:`, err);
-          return Promise.reject(err);
-        });
-      })
-  );
-
-  console.log("✅ 푸시 전송 결과:", results);
-
-  res.status(200).json({ message: "알림 전송 완료", results });
-});
-
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`서버 실행 중: http://localhost:${PORT}`);
