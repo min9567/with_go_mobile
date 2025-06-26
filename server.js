@@ -367,7 +367,7 @@ app.post("/send", async (req, res) => {
   const { data: subscribers, error } = await supabase
       .from("subscription")
       .select("*");
-
+  console.log("알람 송신 전 조회 결과 : ",subscribers);
   if (error) {
     console.error("❌ Supabase SELECT 실패", error);
     return res.status(500).json({ error: error.message });
@@ -393,7 +393,7 @@ app.post("/send", async (req, res) => {
           return Promise.reject(e);
         }
 
-        return webpush.sendNotification(subObj, payload).catch((err) => {
+        return webpush.sendNotification(subObj, payload).then(res=>console.log("알림전송성공:",res)).catch((err) => {
           console.error(`🚨 [${idx}] 푸시 전송 실패:`, err);
           return Promise.reject(err);
         });
