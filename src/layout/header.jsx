@@ -1,9 +1,14 @@
 import Header from "../css/Header.module.css";
 import logo from "../images/withgo.svg";
-import logout from "../images/Logout.svg"
+import logout from "../images/Logout.svg";
 
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+
+// const KAKAO_LOGOUT_URL =
+//   `https://kauth.kakao.com/oauth/logout?client_id=${
+//     import.meta.env.VITE_KAKAO_CLIENT_ID
+//   }` + `&logout_redirect_uri=${import.meta.env.VITE_KAKAO_LOGOUT_REDIRECT_URI}`;
 
 function header() {
   const navigate = useNavigate();
@@ -13,6 +18,10 @@ function header() {
     navigate("/login");
   };
 
+  // const Logout = async () => {
+  //   await supabase.auth.signOut();
+  //   window.location.href = KAKAO_LOGOUT_URL;
+  // };
 
   return (
     <div className={Header.content}>
