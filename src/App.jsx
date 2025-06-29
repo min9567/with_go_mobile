@@ -65,7 +65,7 @@ function App() {
                             console.warn("❗ user_id가 없습니다. 구독 생략");
                             return;
                         }
-                        return fetch(`${API_URL}/subscribe`, {
+                        return fetch(`${import.meta.env.VITE_API_URL}/alert/subscribe`, {
                             method: "POST",
                             body: JSON.stringify({ user_id, subscription }),
                             headers: {
