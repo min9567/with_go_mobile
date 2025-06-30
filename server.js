@@ -325,6 +325,48 @@ app.post("/status-logs", async (req, res) => {
   });
 });
 
+app.post("/alert/subscribe", async (req, res) => {
+  console.log("✅ POST /alert/subscribe 호출됨");
+
+  const { user_id, subscription } = req.body;
+
+  if (!user_id || !subscription) {
+    return res.status(400).json({ message: "user_id 또는 subscription 누락" });
+  }
+
+  const { error } = await supabase
+      .from("subscription")
+      .insert({
+        user_id,
+        subscription,
+        created_at: getKstISOString(),
+      });
+
+  if (error) {
+    console.error("❌ Supabase insert error:", error);
+    return res.status(500).json({ message: "DB insert 실패", error: error.message });
+  }
+
+  res.status(200).json({ message: "구독 성공", received: true });
+});
+
+app.post("/alert/check-subscription", async (req, res) => {
+  const { user_id } = req.body;
+  if (!user_id) return res.status(400).json({ exists: false });
+
+  const { data, error } = await supabase
+      .from("subscription")
+      .select("id")
+      .eq("user_id", user_id);
+
+  if (error) {
+    console.error("❌ Supabase 조회 실패:", error.message);
+    return res.status(500).json({ exists: false });
+  }
+
+  res.json({ exists: data.length > 0 });
+});
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`서버 실행 중: http://localhost:${PORT}`);

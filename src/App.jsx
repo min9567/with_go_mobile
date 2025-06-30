@@ -45,45 +45,76 @@ function App() {
         fetchUser();
     }, []);
 
-  useEffect(() => {
-    if ("serviceWorker" in navigator && "PushManager" in window) {
-        navigator.serviceWorker.ready.then((registration) => {
-            registration.pushManager.getSubscription().then((existingSub) => {
-                if (existingSub) {
-                    console.log("✅ 이미 구독된 상태입니다.");
-                    return;
-                }
+    useEffect(() => {
+        if ("serviceWorker" in navigator && "PushManager" in window) {
+            navigator.serviceWorker.ready.then((registration) => {
+                registration.pushManager.getSubscription().then(async (existingSub) => {
+                    const user_id = localStorage.getItem("user_id");
+                    if (!user_id) {
+                        console.warn("❗ user_id가 없습니다.");
+                        return;
+                    }
 
-                registration.pushManager
-                    .subscribe({
-                        userVisibleOnly: true,
-                        applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
-                    })
-                    .then((subscription) => {
-                        const user_id = localStorage.getItem("user_id");
-                        if (!user_id) {
-                            console.warn("❗ user_id가 없습니다. 구독 생략");
-                            return;
-                        }
-                        return fetch(`${import.meta.env.VITE_API_URL}/alert/subscribe`, {
+                    if (existingSub) {
+                        console.log("✅ 이미 구독된 상태입니다.");
+
+                        // 서버에 저장되어 있는지 확인
+                        const res = await fetch(`${API_URL}/alert/check-subscription`, {
                             method: "POST",
-                            body: JSON.stringify({ user_id, subscription }),
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
+                            body: JSON.stringify({ user_id }),
+                            headers: { "Content-Type": "application/json" },
                         });
-                    })
-                    .then((res) => res?.json?.())
-                    .then((data) => {
-                        if (data) console.log("✅ 알림 구독 완료:", data);
-                    })
-                    .catch((err) => {
-                        console.error("❌ 알림 구독 실패:", err);
-                    });
+
+                        const data = await res.json();
+
+                        if (!data.exists) {
+                            console.warn("❗ 서버에 구독 정보가 없어 다시 저장 시도");
+
+                            await fetch(`${API_URL}/alert/subscribe`, {
+                                method: "POST",
+                                body: JSON.stringify({ user_id, subscription: existingSub }),
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                            })
+                                .then((res) => res?.json?.())
+                                .then((data) => {
+                                    if (data) console.log("✅ 서버에 재등록 완료:", data);
+                                })
+                                .catch((err) => {
+                                    console.error("❌ 재등록 실패:", err);
+                                });
+                        }
+
+                        return;
+                    }
+
+                    // 새로 구독하는 경우
+                    registration.pushManager
+                        .subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
+                        })
+                        .then((subscription) => {
+                            return fetch(`${API_URL}/alert/subscribe`, {
+                                method: "POST",
+                                body: JSON.stringify({ user_id, subscription }),
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                            });
+                        })
+                        .then((res) => res?.json?.())
+                        .then((data) => {
+                            if (data) console.log("✅ 알림 구독 완료:", data);
+                        })
+                        .catch((err) => {
+                            console.error("❌ 알림 구독 실패:", err);
+                        });
+                });
             });
-        });
-    }
-  }, []);
+        }
+    }, []);
 
   return (
     <>
