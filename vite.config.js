@@ -20,6 +20,9 @@ export default defineConfig({
       srcDir: "src",
       filename: "sw.js",
       includeAssets: ["favicon.ico", "robots.txt", "apple-touch-icon.png"],
+      srcDir: "public",
+      filename: "sw.js",
+      strategies: "injectManifest",
       manifest: {
         name: "WITHGOAPP",
         short_name: "WITHGO",

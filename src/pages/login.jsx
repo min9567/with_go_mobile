@@ -90,7 +90,7 @@ const login = () => {
     await supabase.auth.signInWithOAuth({
       provider: "kakao",
       options: {
-        redirectTo: "https://with-go-mobile.vercel.app/login",
+        redirectTo: "https://mobile-test-sigma.vercel.app/login",
       },
     });
   };
