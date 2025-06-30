@@ -1,17 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const { createClient } = require("@supabase/supabase-js");
-const webpush = require("web-push");
 require("dotenv").config();
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-const supabase = createClient(
-  process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL,
-  process.env.SUPABASE_KEY || process.env.VITE_SUPABASE_KEY
-);
 
 function getKstISOString() {
   const now = new Date();
@@ -19,16 +10,10 @@ function getKstISOString() {
   return kst.toISOString().replace("Z", "+09:00");
 }
 
-webpush.setVapidDetails(
-    'mailto:kimyoott@naver.com',
-    process.env.VAPID_PUBLIC_KEY,
-    process.env.VAPID_PRIVATE_KEY
-);
+const app = express();
 
-app.use((req, res, next) => {
-  console.log(`[요청 감지] ${req.method} ${req.url}`);
-  next();
-});
+app.use(cors());
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("API 서버 정상 작동 중");
@@ -174,6 +159,7 @@ app.post("/storage", async (req, res) => {
   const {
     name,
     phone,
+    email,
     startDate,
     endDate,
     selectValue,
@@ -190,6 +176,7 @@ app.post("/storage", async (req, res) => {
       {
         name,
         phone,
+        mail: email,
         storage_start_date: startDate,
         storage_end_date: endDate,
         location: selectValue,
@@ -323,40 +310,6 @@ app.post("/status-logs", async (req, res) => {
     logs,
     location,
   });
-});
-
-// ✅ 푸시 구독 저장 API
-app.post("/subscribe", async (req, res) => {
-  console.log("✅ POST /subscribe 호출됨");
-
-  if (!req.body) {
-    console.error("❌ body가 없음");
-    return res.status(400).json({ message: "body 없음" });
-  }
-
-  const { user_id, subscription } = req.body;
-
-  if (!user_id || !subscription) {
-    console.error("❌ 필수 항목 누락됨", req.body);
-    return res.status(400).json({ message: "user_id 또는 subscription 누락" });
-  }
-
-  console.log("💬 받은 구독 데이터:", user_id, subscription);
-
-  const { error } = await supabase
-      .from("subscription")
-      .insert({
-        user_id,
-        subscription, // ✅ JSON.stringify 제거: Supabase가 json으로 인식
-        created_at: getKstISOString(),
-      });
-
-  if (error) {
-    console.error("❌ Supabase insert error:", error);
-    return res.status(400).json({ message: "DB insert 실패", error: error.message });
-  }
-
-  res.status(200).json({ message: "구독 성공", received: true });
 });
 
 const PORT = process.env.PORT || 8080;

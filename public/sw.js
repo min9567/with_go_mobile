@@ -26,28 +26,26 @@ self.addEventListener('push', (event) => {
         url: '/',
     };
 
+    const title = data.title || '알림';
     const options = {
-        body: data.body,
-        icon: '/image/bbiyo.png',
-        badge: '/image/bbiyo.png',
-        data: {
-            url: data.url,
-        },
+        body: data.body || '새로운 알림이 도착했습니다.',
+        icon: '/favicon.ico', // 알림에 표시될 아이콘 (필요시 교체)
+        badge: '/favicon.ico', // 상태 표시줄 작은 아이콘
+        data: data.url || '/', // 클릭 시 열릴 경로 (예: 상세 페이지)
     };
 
     event.waitUntil(
-        self.registration.showNotification(data.title, options)
+        self.registration.showNotification(title, options)
     );
 });
 
-// 알림 클릭 시 해당 URL로 이동
-self.addEventListener('notificationclick', (event) => {
+self.addEventListener('notificationclick', function (event) {
+    console.log('🔔 알림 클릭:', event.notification);
     event.notification.close();
 
-    const targetUrl = event.notification.data?.url || '/';
-
+    const targetUrl = event.notification.data || '/';
     event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+        clients.matchAll({ type: 'window' }).then((clientList) => {
             for (const client of clientList) {
                 if (client.url === targetUrl && 'focus' in client) {
                     return client.focus();

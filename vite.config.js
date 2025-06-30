@@ -9,6 +9,16 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
+      workbox: {
+        navigateFallback: "/",
+      },
+      devOptions: {
+        enabled: true,
+        type: "module",
+      },
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "sw.js",
       includeAssets: ["favicon.ico", "robots.txt", "apple-touch-icon.png"],
       manifest: {
         name: "WITHGOAPP",
@@ -18,6 +28,11 @@ export default defineConfig({
         background_color: "#ffffff",
         theme_color: "#ffffff",
         icons: [
+          {
+            src: "/image/bbiyo.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
           {
             src: "/image/bbiyo.png",
             sizes: "512x512",
