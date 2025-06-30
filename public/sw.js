@@ -19,20 +19,28 @@ workbox.routing.registerRoute(
 
 // 푸시 알림 수신 처리
 self.addEventListener('push', (event) => {
-    console.log('📩 푸시 알림 수신됨:', event);
-    const data = event.data?.json() || {
+    console.log('📩 푸시 이벤트 발생:', event);
+
+    let data = {
         title: 'WITHGO 알림',
         body: '새로운 알림이 도착했습니다.',
         url: '/',
     };
 
+    try {
+        if (event.data) {
+            data = event.data.json();
+            console.log('✅ 푸시 데이터 파싱 성공:', data);
+        }
+    } catch (err) {
+        console.error('❌ 푸시 데이터 파싱 오류:', err);
+    }
+
     const options = {
         body: data.body,
         icon: '/image/bbiyo.png',
         badge: '/image/bbiyo.png',
-        data: {
-            url: data.url,
-        },
+        data: { url: data.url },
     };
 
     event.waitUntil(

@@ -334,20 +334,51 @@ app.post("/alert/subscribe", async (req, res) => {
     return res.status(400).json({ message: "user_id 또는 subscription 누락" });
   }
 
-  const { error } = await supabase
+  // 중복 여부 확인
+  const { data: existing, error: fetchError } = await supabase
       .from("subscription")
-      .insert({
-        user_id,
-        subscription,
-        created_at: getKstISOString(),
-      });
+      .select("id")
+      .eq("user_id", user_id)
+      .maybeSingle();
 
-  if (error) {
-    console.error("❌ Supabase insert error:", error);
-    return res.status(500).json({ message: "DB insert 실패", error: error.message });
+  if (fetchError) {
+    console.error("❌ Supabase 조회 실패:", fetchError);
+    return res.status(500).json({ message: "조회 중 오류 발생" });
   }
 
-  res.status(200).json({ message: "구독 성공", received: true });
+  if (existing) {
+    // 이미 존재하면 update
+    const { error: updateError } = await supabase
+        .from("subscription")
+        .update({
+          subscription,
+          created_at: getKstISOString(),
+        })
+        .eq("user_id", user_id);
+
+    if (updateError) {
+      console.error("❌ Supabase update 실패:", updateError);
+      return res.status(500).json({ message: "구독 갱신 실패", error: updateError.message });
+    }
+
+    return res.status(200).json({ message: "기존 구독 갱신 성공" });
+  } else {
+    // 존재하지 않으면 insert
+    const { error: insertError } = await supabase
+        .from("subscription")
+        .insert({
+          user_id,
+          subscription,
+          created_at: getKstISOString(),
+        });
+
+    if (insertError) {
+      console.error("❌ Supabase insert 실패:", insertError);
+      return res.status(500).json({ message: "구독 저장 실패", error: insertError.message });
+    }
+
+    return res.status(200).json({ message: "새 구독 저장 성공" });
+  }
 });
 
 app.post("/alert/check-subscription", async (req, res) => {

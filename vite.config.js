@@ -10,6 +10,9 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "robots.txt", "apple-touch-icon.png"],
+      srcDir: "public",
+      filename: "sw.js",
+      strategies: "injectManifest",
       manifest: {
         name: "WITHGOAPP",
         short_name: "WITHGO",
