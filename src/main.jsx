@@ -28,7 +28,7 @@ if ('serviceWorker' in navigator && 'PushManager' in window) {
             const registration = await navigator.serviceWorker.register('/sw.js');
             console.log('✅ Service Worker 등록 완료');
 
-            const VAPID_PUBLIC_KEY = 'BILeY2mfEvzU-CyWjSIDiuPH-1APPqX760eMIRl1IxGAiRRb3Umz16QcqCqS6sFcPD9fk8gA6FTdE8R9l-zqcpM';
+            const VAPID_PUBLIC_KEY = 'BKxNZesYTPwz4Kx2mqWiBmeyamZw1MVLY6KFIDxLPNKkrtoM3lu5qgdxIyk6uKzNL7cnFjHEXo6XzM0raiROJNs';
             const convertedKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
 
             const subscription = await registration.pushManager.subscribe({
