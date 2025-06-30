@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const PUBLIC_VAPID_KEY = "BILeY2mfEvzU-CyWjSIDiuPH-1APPqX760eMIRl1IxGAiRRb3Umz16QcqCqS6sFcPD9fk8gA6FTdE8R9l-zqcpM";
+const PUBLIC_VAPID_KEY = "BKxNZesYTPwz4Kx2mqWiBmeyamZw1MVLY6KFIDxLPNKkrtoM3lu5qgdxIyk6uKzNL7cnFjHEXo6XzM0raiROJNs";
 
 export default function PushInit() {
     useEffect(() => {

@@ -3,13 +3,11 @@ import './index.css'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
 import {supabase} from "./lib/supabase";
-const rootElement = document.getElementById('root');
-
-createRoot(rootElement).render(
-    <BrowserRouter>
-    <App />
-    </BrowserRouter>
-);
+        createRoot(document.getElementById('root')).render(
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        )
 
 // ✅ 푸시 구독 코드 추가
 if ('serviceWorker' in navigator && 'PushManager' in window) {
@@ -57,7 +55,7 @@ if ('serviceWorker' in navigator && 'PushManager' in window) {
 // 🔧 헬퍼 함수
 function urlBase64ToUint8Array(base64String) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-    const raw = window.atob(base64);
-    return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
+const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+const raw = window.atob(base64);
+return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
 }
