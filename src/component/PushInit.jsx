@@ -40,10 +40,13 @@ export default function PushInit() {
         }
 
         // Supabase에 구독 정보 저장
-        const { error } = await supabase.from("subscription").upsert({
-          user_id: user.id,
-          subscription: subscription,
-        });
+        const { error } = await supabase.from("subscription").upsert(
+          {
+            user_id: user.id,
+            subscription: subscription,
+          },
+          { onConflict: ["user_id"] } // 추가!
+        );
 
         if (error) {
           console.error("📡 Supabase 저장 실패:", error.message);
