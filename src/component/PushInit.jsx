@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import {supabase} from "../lib/supabase";
 
 const PUBLIC_VAPID_KEY = "BKxNZesYTPwz4Kx2mqWiBmeyamZw1MVLY6KFIDxLPNKkrtoM3lu5qgdxIyk6uKzNL7cnFjHEXo6XzM0raiROJNs";
 
